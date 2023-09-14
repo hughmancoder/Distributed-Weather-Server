@@ -1,0 +1,5 @@
+com/WeatherData.class
+com/utility/LamportClock.class
+com/AggregationServer.class
+com/utility/JsonUtils.class
+com/App.class

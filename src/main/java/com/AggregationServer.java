@@ -8,8 +8,8 @@ import java.util.*;
 import com.utility.LamportClock;
 
 public class AggregationServer {
-    private static Map<String, WeatherData> weatherDataMap = new HashMap<>();
-    private static LamportClock lamportClock = new LamportClock();
+    public static Map<String, WeatherData> weatherDataMap = new HashMap<>();
+    /* private static LamportClock lamportClock = new LamportClock(); */
 
     public static void main(String[] args) throws IOException {
         int port = args.length > 0 ? Integer.parseInt(args[0]) : 4567;
@@ -37,5 +37,13 @@ public class AggregationServer {
 
     public static void saveDataToFile() {
         // File I/O to save weatherDataMap
+    }
+
+    public static int handlePutRequest(String string) {
+        return 0;
+    }
+
+    public static int handleGetRequest(String string) {
+        return 0;
     }
 }
