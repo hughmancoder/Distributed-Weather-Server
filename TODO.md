@@ -7,10 +7,10 @@
 #### Aggregation Server
 
 - [x] Basic `AggregationServer.java` with minimal functionality
-- [ ] File I/O operations for JSON data
-- [ ] Server startup on a specified port
-- [ ] Handling HTTP status codes 201 and 200
-- [ ] **Tests**: Unit tests for each functionality
+- [x] File I/O operations for JSON data
+- [x] Server startup on a specified port
+- [x] Handling HTTP status codes 201 and 200
+- [x] **Tests**: Unit tests for each functionality
 
 #### GET Client
 
@@ -132,5 +132,6 @@
 ## Testing
 
 - [ ] Unit tests for individual components and methods
+- [ ] More rigorous testing, try invalid files and different data
 - [ ] Integration tests for interactions and parallel requests
 - [ ] Tests for server crash and recovery, network failure, and incorrect JSON

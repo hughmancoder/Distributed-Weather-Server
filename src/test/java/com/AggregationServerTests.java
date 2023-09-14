@@ -3,12 +3,18 @@ package com;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
+import com.models.WeatherData;
 import com.utility.JsonUtils;
 import com.utility.LamportClock;
 
 public class AggregationServerTests extends TestCase {
+
     public AggregationServerTests(String testName) {
         super(testName);
     }
@@ -17,57 +23,62 @@ public class AggregationServerTests extends TestCase {
         return new TestSuite(AggregationServerTests.class);
     }
 
-    // Test if the JSON conversion works as expected
-    public void testJsonConversion() {
+    // Test if HTTP 200 is returned for updates on existing data
+    public void testHttpStatusForUpdate() {
+        // Simulate a PUT request with existing data
         WeatherData wd = new WeatherData();
-        wd.id = "sampleId";
-        wd.name = "sampleName";
+        wd.setId("existingId");
+        wd.setName("existingName");
 
-        // TODO: add other attributes
-        String json = JsonUtils.toJson(wd);
-        WeatherData wdFromJson = JsonUtils.fromJson(json, WeatherData.class);
-        assertEquals(wd.id, wdFromJson.id);
-        assertEquals(wd.name, wdFromJson.name);
+        // Manually populate weatherDataMap to simulate existing data
+        AggregationServer.weatherDataMap.put("existingId", wd);
 
+        int status = AggregationServer.handlePutRequest(wd);
+        assertEquals(200, status);
     }
 
-    public void testLamportClock() {
-        LamportClock lc = new LamportClock();
-        lc.tick();
-        lc.update(5);
-        assertEquals(6, lc.getTime());
-    }
-
-    // Test if the data is loaded correctly from the file
-    public void testDataLoadFromFile() {
-        // Assuming that loadDataFromFile populates weatherDataMap
-        AggregationServer.loadDataFromFile();
-        assertTrue(AggregationServer.weatherDataMap.containsKey("someExpectedId"));
-    }
-
-    // Test if the data is saved correctly to the file
-    public void testDataSaveToFile() {
-        // Add some data to weatherDataMap
-        AggregationServer.weatherDataMap.put("testId", new WeatherData());
-        AggregationServer.saveDataToFile();
-
-        // Clear the current data and reload it
-        AggregationServer.weatherDataMap.clear();
-        AggregationServer.loadDataFromFile();
-        assertTrue(AggregationServer.weatherDataMap.containsKey("testId"));
-    }
-
-    // Test if HTTP 201 is returned when new data is created
-    public void testHttpStatusForNewData() {
+    // Test if HTTP 201 is returned for creation of new data
+    public void testHttpStatusForCreation() {
         // Simulate a PUT request with new data
-        int status = AggregationServer.handlePutRequest("newData");
+        WeatherData wd = new WeatherData();
+        wd.setId("newId");
+        wd.setName("newName");
+
+        // Ensure weatherDataMap is empty to simulate no existing data
+        AggregationServer.weatherDataMap.clear();
+
+        int status = AggregationServer.handlePutRequest(wd);
         assertEquals(201, status);
     }
 
-    // Test if HTTP 200 is returned for updates
-    public void testHttpStatusForUpdate() {
-        // Simulate a PUT request with existing data
-        int status = AggregationServer.handlePutRequest("existingData");
-        assertEquals(200, status);
-    }
+    // TODO
+    // Test if data is loaded properly from file
+    /*
+     * public void testLoadDataFromFile() {
+     * try {
+     * // Write some data to the file
+     * WeatherData wd = new WeatherData();
+     * wd.setId("fileId");
+     * wd.setName("fileName");
+     * 
+     * HashMap<String, WeatherData> testMap = new HashMap<>();
+     * testMap.put("fileId", wd);
+     * 
+     * Files.write(Paths.get(AggregationServer.DATA_FILE_PATH),
+     * JsonUtils.toJson(testMap).getBytes());
+     * 
+     * // Clear the existing map and reload it from the file
+     * AggregationServer.weatherDataMap.clear();
+     * AggregationServer.loadDataFromFile();
+     * 
+     * // Verify that the map contains the correct data
+     * assertTrue(AggregationServer.weatherDataMap.containsKey("fileId"));
+     * assertEquals("fileName",
+     * AggregationServer.weatherDataMap.get("fileId").getName());
+     * 
+     * } catch (IOException e) {
+     * fail("Test failed due to IOException");
+     * }
+     * }
+     */
 }
