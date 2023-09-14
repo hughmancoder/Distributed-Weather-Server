@@ -3,7 +3,11 @@ compile:
 	mvn package
 
 run-app:
-	@echo "Running APP..."
-	java -cp target/my-app-1.0-SNAPSHOT.jar com.example.App
+	@echo "Running App..."
+	java -cp target/my-app-1.0-SNAPSHOT.jar com.App
 
 run: compile run-app
+
+test:
+	@echo "Running Tests..."
+	mvn test

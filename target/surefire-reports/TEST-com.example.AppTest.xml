@@ -3,7 +3,7 @@
   <properties>
     <property name="java.specification.version" value="20"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
-    <property name="java.class.path" value="/Users/hughsignoriello/Desktop/DS-A2/target/test-classes:/Users/hughsignoriello/Desktop/DS-A2/target/classes:/Users/hughsignoriello/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:"/>
+    <property name="java.class.path" value="/Users/hughsignoriello/Desktop/DS-A2/target/test-classes:/Users/hughsignoriello/Desktop/DS-A2/target/classes:/Users/hughsignoriello/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/hughsignoriello/.m2/repository/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar:"/>
     <property name="java.vm.vendor" value="Homebrew"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.vendor.url" value="https://github.com/Homebrew/homebrew-core/issues"/>
@@ -12,10 +12,10 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="AU"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/20.0.1/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/hughsignoriello/Desktop/DS-A2/target/surefire/surefirebooter-20230914112714114_3.jar /Users/hughsignoriello/Desktop/DS-A2/target/surefire 2023-09-14T11-27-14_077-jvmRun1 surefire-20230914112714114_1tmp surefire_0-20230914112714114_2tmp"/>
+    <property name="sun.java.command" value="/Users/hughsignoriello/Desktop/DS-A2/target/surefire/surefirebooter-20230914114718467_3.jar /Users/hughsignoriello/Desktop/DS-A2/target/surefire 2023-09-14T11-47-18_429-jvmRun1 surefire-20230914114718467_1tmp surefire_0-20230914114718467_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
-    <property name="surefire.test.class.path" value="/Users/hughsignoriello/Desktop/DS-A2/target/test-classes:/Users/hughsignoriello/Desktop/DS-A2/target/classes:/Users/hughsignoriello/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:"/>
+    <property name="surefire.test.class.path" value="/Users/hughsignoriello/Desktop/DS-A2/target/test-classes:/Users/hughsignoriello/Desktop/DS-A2/target/classes:/Users/hughsignoriello/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/hughsignoriello/.m2/repository/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="/Users/hughsignoriello"/>
     <property name="user.language" value="en"/>
@@ -29,7 +29,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/hughsignoriello/Desktop/DS-A2/target/surefire/surefirebooter-20230914112714114_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/hughsignoriello/Desktop/DS-A2/target/surefire/surefirebooter-20230914114718467_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="20.0.1"/>
@@ -58,5 +58,5 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="64.0"/>
   </properties>
-  <testcase name="testApp" classname="com.example.AppTest" time="0.001"/>
+  <testcase name="testApp" classname="com.example.AppTest" time="0.002"/>
 </testsuite>
