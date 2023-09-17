@@ -19,7 +19,29 @@ public class WeatherData {
     private int windSpeedKmh;
     private int windSpeedKt;
 
-    // Getters and Setters
+    public WeatherData(String id, String name, String state, String timeZone, double latitude, double longitude,
+            String localDateTime, String localDateTimeFull, double airTemperature, double apparentTemperature,
+            String cloudCondition, double dewPoint, double pressure, int relativeHumidity, String windDirection,
+            int windSpeedKmh, int windSpeedKt) {
+
+        this.id = id;
+        this.name = name;
+        this.state = state;
+        this.timeZone = timeZone;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.localDateTime = localDateTime;
+        this.localDateTimeFull = localDateTimeFull;
+        this.airTemperature = airTemperature;
+        this.apparentTemperature = apparentTemperature;
+        this.cloudCondition = cloudCondition;
+        this.dewPoint = dewPoint;
+        this.pressure = pressure;
+        this.relativeHumidity = relativeHumidity;
+        this.windDirection = windDirection;
+        this.windSpeedKmh = windSpeedKmh;
+        this.windSpeedKt = windSpeedKt;
+    }
 
     public String getId() {
         return id;

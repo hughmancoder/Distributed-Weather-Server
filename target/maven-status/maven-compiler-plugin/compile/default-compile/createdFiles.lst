@@ -1,4 +1,6 @@
 com/utility/LamportClock.class
+com/AggregationServer$1.class
+com/AggregationServer$DataHandler.class
 com/models/WeatherData.class
 com/AggregationServer.class
 com/utility/JsonUtils.class

@@ -1,5 +1,6 @@
 package com;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+// TODO: manually implement 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
@@ -14,12 +16,15 @@ import com.models.WeatherData;
 import com.utility.LamportClock;
 import com.utility.JsonUtils;
 import java.io.IOException;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class AggregationServer {
     private static final ReentrantLock lock = new ReentrantLock();
-    private static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
+    public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
     public static final String DATA_FILE_PATH = "../../resources/weather_data.json";
     private static LamportClock lamportClock = new LamportClock();
+    private static PriorityBlockingQueue<WeatherData> weatherDataQueue = new PriorityBlockingQueue<>();
+    public static HashMap<String, Long> lastActiveMap = new HashMap<>();
     public static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
 
     public static void main(String[] args) {
@@ -34,28 +39,27 @@ public class AggregationServer {
         }
 
         try {
-            loadDataFromFile();
+            // TODO: data from content server
+            loadDataFromFile(DATA_FILE_PATH);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Failed to load data from file.");
-            return; // If data loading is critical, we should terminate the application
+            return;
         }
 
         try {
-            // Start HTTP server
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
             server.createContext("/data", new DataHandler());
-            server.setExecutor(Executors.newFixedThreadPool(10)); // Set executor (null will create a default executor)
+            server.setExecutor(Executors.newFixedThreadPool(10));
             server.start();
 
-            // Initialize timer to remove old data entries
             Timer timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     removeOldEntries();
                 }
-            }, 30000, 30000); // Run every 30 seconds
+            }, 30000, 30000);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,24 +67,34 @@ public class AggregationServer {
         }
     }
 
-    public static void saveDataToFile() {
+    public static void saveWeatherDataMapToFile() {
+        // Lock to ensure the map is not modified while saving
         lock.lock();
         try {
             String json = JsonUtils.toJson(weatherDataMap);
-            atomicFileWrite(json, TEMP_STORAGE_PATH);
-            Files.move(Paths.get(TEMP_STORAGE_PATH), Paths.get(DATA_FILE_PATH), StandardCopyOption.ATOMIC_MOVE);
+            Path path = Paths.get(TEMP_STORAGE_PATH);
+
+            // ensure directory exists
+            Path parentDir = path.getParent();
+            if (parentDir != null) {
+                Files.createDirectories(parentDir);
+            }
+
+            Files.write(path, json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            // Handle exception
+            e.printStackTrace();
+            System.out.println("Failed to save data to file.");
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
     }
 
-    public static void loadDataFromFile() throws IOException {
+    public static void loadDataFromFile(String filePath) throws IOException {
         try {
-            if (Files.exists(Paths.get(DATA_FILE_PATH))) {
-                String json = new String(Files.readAllBytes(Paths.get(DATA_FILE_PATH)));
-                // Assuming that JsonUtils.fromJson() returns the correct type
+            if (Files.exists(Paths.get(filePath))) {
+                String json = new String(Files.readAllBytes(Paths.get(filePath)));
                 HashMap<String, WeatherData> dataMap = JsonUtils.fromJson(json, HashMap.class);
                 if (dataMap != null) {
                     weatherDataMap.putAll(dataMap);
@@ -95,15 +109,14 @@ public class AggregationServer {
         }
     }
 
-    private static void atomicFileWrite(String content, String path) throws IOException {
-        Files.write(Paths.get(path), content.getBytes(), StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-    }
-
-    // TODO
     private static void removeOldEntries() {
-        // Efficiently remove entries older than 30 seconds
-        // You could either a timestamp or the Lamport clock to identify stale
+        lock.lock();
+        try {
+            long currentTime = lamportClock.getTime();
+            lastActiveMap.entrySet().removeIf(entry -> currentTime - entry.getValue() > 30);
+        } finally {
+            lock.unlock();
+        }
     }
 
     static class DataHandler implements HttpHandler {
@@ -116,38 +129,55 @@ public class AggregationServer {
             } else if ("PUT".equals(requestMethod)) {
                 handlePutRequest(httpExchange);
             } else {
-                httpExchange.sendResponseHeaders(400, 0); // Bad Request
+                httpExchange.sendResponseHeaders(400, 0);
             }
         }
 
-        // TODO
-        private void handleGetRequest(HttpExchange httpExchange) {
-            // Handle GET Request here
+        private void handleGetRequest(HttpExchange httpExchange) throws IOException {
+            lock.lock();
+            try {
+                String json = JsonUtils.toJson(weatherDataMap);
+                byte[] response = json.getBytes();
+                httpExchange.sendResponseHeaders(200, response.length);
+                httpExchange.getResponseBody().write(response);
+                httpExchange.close();
+            } finally {
+                lock.unlock();
+            }
         }
 
         private void handlePutRequest(HttpExchange httpExchange) throws IOException {
-            // Extract the WeatherData from the HttpExchange and call the static method
-            int statusCode = AggregationServer.handlePutRequest(new WeatherData());
-            httpExchange.sendResponseHeaders(statusCode, 0); // Respond with the status code
+            // TODO: Extract WeatherData and Lamport timestamp here
+            // Example: WeatherData data = extractWeatherData(httpExchange);
+            // int statusCode = AggregationServer.handlePutRequest(new WeatherData());
+            // httpExchange.sendResponseHeaders(statusCode, 0);
         }
     }
 
-    // TODO
     public static int handlePutRequest(WeatherData data) {
         int statusCode;
         if (weatherDataMap.isEmpty()) {
-            statusCode = 201; // HTTP_CREATED
+            statusCode = 201;
         } else {
-            statusCode = 200; // HTTP_OK
+            statusCode = 200;
         }
 
         lock.lock();
         try {
-            weatherDataMap.put(data.getId(), data);
-            saveDataToFile();
+            weatherDataQueue.offer(data);
+            WeatherData nextData;
+            /*
+             * while ((nextData = weatherDataQueue.peek()) != null
+             * && nextData.getLamportTimestamp() <= lamportClock.getTime()) {
+             * weatherDataQueue.poll();
+             * weatherDataMap.put(nextData.getId(), nextData);
+             * lastActiveMap.put(nextData.getId(), lamportClock.getTime());
+             * }
+             */
+
         } catch (Exception e) {
             e.printStackTrace();
-            statusCode = 500; // Internal Server Error
+            statusCode = 500; // Internal server error
         } finally {
             lock.unlock();
         }

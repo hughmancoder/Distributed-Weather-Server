@@ -8,7 +8,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-public class UtilitiesTests extends TestCase {
+public class UtilityTests extends TestCase {
 
     public static Test suite() {
         return new TestSuite(AggregationServerTests.class);
