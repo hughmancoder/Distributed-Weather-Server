@@ -14,14 +14,14 @@
 
 #### GET Client
 
-- [ ] Basic `GETClient.java` with minimal functionality
-- [ ] Read command-line parameters for server and port
-- [ ] Implement GET request functionality
+- [x] Basic `GETClient.java` with minimal functionality
+- [x] Read command-line parameters for server and port
+- [x] Implement GET request functionality
 - [ ] **Tests**: Unit tests for basic GET operations
 
 #### Content Server
 
-- [ ] Basic `ContentServer.java` with minimal functionality
+- [x] Basic `ContentServer.java` with minimal functionality
 - [ ] Read command-line parameters for server and file location
 - [ ] File reading and text parsing
 - [ ] **Tests**: Unit tests for individual features
@@ -51,6 +51,7 @@
 
 - [ ] Implementation in all components
 - [ ] **Tests**: Unit and Integration tests for synchronization
+- [ ] Lamport Clocks: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itself to synchronize with other systems.
 
 #### Error Handling
 
@@ -135,3 +136,7 @@
 - [ ] More rigorous testing, try invalid files and different data
 - [ ] Integration tests for interactions and parallel requests
 - [ ] Tests for server crash and recovery, network failure, and incorrect JSON
+
+## Other
+
+- [ ] API documentation

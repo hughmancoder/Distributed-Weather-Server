@@ -43,6 +43,9 @@ public class WeatherData {
         this.windSpeedKt = windSpeedKt;
     }
 
+    public WeatherData() {
+    }
+
     public String getId() {
         return id;
     }

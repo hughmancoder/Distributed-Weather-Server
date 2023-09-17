@@ -8,10 +8,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+
 // TODO: manually implement 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
+
 import com.models.WeatherData;
 import com.utility.LamportClock;
 import com.utility.JsonUtils;
@@ -28,6 +30,7 @@ public class AggregationServer {
     public static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
 
     public static void main(String[] args) {
+
         int port = 4567;
         if (args.length > 0) {
             try {
@@ -37,7 +40,7 @@ public class AggregationServer {
                 System.out.println("Invalid port number. Using default port 4567.");
             }
         }
-
+        System.out.println("Running aggregation server on port " + port + "..");
         try {
             // TODO: data from content server
             loadDataFromFile(DATA_FILE_PATH);
@@ -49,7 +52,7 @@ public class AggregationServer {
 
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-            server.createContext("/data", new DataHandler());
+            server.createContext("/weather", new DataHandler());
             server.setExecutor(Executors.newFixedThreadPool(10));
             server.start();
 
@@ -113,6 +116,7 @@ public class AggregationServer {
         lock.lock();
         try {
             long currentTime = lamportClock.getTime();
+            // TODO: get string key and remove from weatherDataMap;
             lastActiveMap.entrySet().removeIf(entry -> currentTime - entry.getValue() > 30);
         } finally {
             lock.unlock();
@@ -133,6 +137,7 @@ public class AggregationServer {
             }
         }
 
+        // TODO: implement to specificaiotn
         private void handleGetRequest(HttpExchange httpExchange) throws IOException {
             lock.lock();
             try {
@@ -146,6 +151,7 @@ public class AggregationServer {
             }
         }
 
+        // TODO: Implement
         private void handlePutRequest(HttpExchange httpExchange) throws IOException {
             // TODO: Extract WeatherData and Lamport timestamp here
             // Example: WeatherData data = extractWeatherData(httpExchange);
