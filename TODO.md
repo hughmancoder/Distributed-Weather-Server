@@ -31,14 +31,14 @@
 #### Basic Communication
 
 - [x] Communication between Aggregation Server and GET Client
-- [ ] Communication between Aggregation Server and Content Server
-- [ ] **Tests**: Integration tests for communication
+- [x] Communication between Aggregation Server and Content Server
+- [x] **Tests**: Integration tests for communication
 
 #### PUT Operations
 
-- [ ] Implement PUT operations in Content Server
-- [ ] PUT request handling in Aggregation Server
-- [ ] **Tests**: Unit and Integration tests for PUT operations
+- [x] Implement PUT operations in Content Server
+- [x] PUT request handling in Aggregation Server
+- [x] **Tests**: Unit and Integration tests for PUT operations
 
 #### GET Operations
 
@@ -68,6 +68,7 @@
 
 - [ ] Code quality and comments
 - [ ] Comprehensive and integration testing
+- [ ] Test persistance among server restarts and crashes
 - [ ] Optional: Implement bonus features like custom JSON parsing
 
 ## Component Methods

@@ -1,14 +1,7 @@
 
 package com;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import com.utility.LamportClock;
-
 import junit.framework.TestCase;
 
 // Aggregation server must be running

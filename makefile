@@ -22,5 +22,5 @@ test:
 	mvn test
 
 test_: 
-	mvn test -Dtest=GETClientIntegrationTest
+	mvn test -Dtest=ContentServerIntegrationTests.java
 

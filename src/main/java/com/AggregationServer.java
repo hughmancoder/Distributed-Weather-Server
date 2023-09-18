@@ -10,7 +10,10 @@ import java.util.concurrent.Executors;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.TimerTask;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import java.util.Map;
 import java.nio.file.*;
 import java.util.Timer;
 
+import com.google.gson.JsonParseException;
 import com.models.WeatherData;
 import com.utility.LamportClock;
 import com.utility.JsonUtils;
@@ -182,7 +186,8 @@ public class AggregationServer {
             } else if ("PUT".equals(requestMethod)) {
                 PUTRequest(httpExchange);
             } else {
-                httpExchange.sendResponseHeaders(400, 0);
+                httpExchange.sendResponseHeaders(400, 0); // Bad Request
+                httpExchange.close();
             }
         }
 
@@ -236,11 +241,36 @@ public class AggregationServer {
         private void PUTRequest(HttpExchange httpExchange) throws IOException {
             lock.lock();
             try {
-                // Extract WeatherData from the incoming request
-                System.out.println(httpExchange);
-                // int statusCode = AggregationServer.PUTRequest(data);
-                // httpExchange.sendResponseHeaders(statusCode, 0);
-                // TODO: update WeatherDatamap and lastActiveMap
+                // Read the request body
+                InputStream is = httpExchange.getRequestBody();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+
+                String requestBody = sb.toString();
+                WeatherData weatherData = JsonUtils.fromJson(requestBody);
+
+                // Validate the received WeatherData object
+                if (weatherData == null || weatherData.getId() == null || weatherData.getId().isEmpty()) {
+                    httpExchange.sendResponseHeaders(400, 0); // Bad Request
+                    return;
+                }
+                // Call the static PUTRequest to update data and get the status code
+                int statusCode = AggregationServer.PUTRequest(weatherData);
+
+                // Send the response headers
+                httpExchange.sendResponseHeaders(statusCode, 0);
+
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+                httpExchange.sendResponseHeaders(400, 0); // Bad Request
+            } catch (Exception e) {
+                e.printStackTrace();
+                httpExchange.sendResponseHeaders(500, 0); // Internal Server Error
             } finally {
                 lock.unlock();
                 httpExchange.close();
@@ -258,15 +288,8 @@ public class AggregationServer {
 
         lock.lock();
         try {
-            // Add the data to the queue
-            weatherDataQueue.offer(data);
-
-            // Assuming you have a method in WeatherData class to get Lamport timestamp
-            while (!weatherDataQueue.isEmpty()) {
-                WeatherData nextData = weatherDataQueue.poll();
-                weatherDataMap.put(nextData.getId(), nextData);
-            }
-
+            // TODO: update other map
+            weatherDataMap.put(data.getId(), data);
         } catch (Exception e) {
             e.printStackTrace();
             statusCode = 500; // Internal Server Error

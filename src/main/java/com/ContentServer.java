@@ -1,13 +1,18 @@
 package com;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.util.HashMap;
 import com.models.WeatherData;
+import com.utility.JsonUtils;
 
 public class ContentServer {
 
@@ -19,24 +24,69 @@ public class ContentServer {
         this.fileLocation = fileLocation;
     }
 
-    public void start() {
+    public void uploadWeatherDataToAggregateServer(String aggregateServerUrl) {
+        WeatherData weatherData = readFileAndParse();
+        if (weatherData != null) {
+            String json = JsonUtils.toJson(weatherData);
+            try {
+                PUTRequest(json, aggregateServerUrl);
+            } catch (IOException e) {
+                System.err.println("Failed to upload data to aggregate server: " + e.getMessage());
+            }
+        }
+    }
+
+    public void PUTRequest(String json, String aggregateServerUrl) throws IOException {
+        URL url = new URL(aggregateServerUrl);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+        // Set up the connection for a PUT request
+        con.setRequestMethod("PUT");
+        con.setRequestProperty("Content-Type", "application/json; utf-8");
+        con.setDoOutput(true);
+
+        // Write JSON payload
+        try (DataOutputStream writer = new DataOutputStream(con.getOutputStream())) {
+            writer.writeBytes(json);
+            writer.flush();
+        }
+
+        int responseCode = con.getResponseCode();
+        System.out.println("Sent PUT request to aggregate server. Response Code: " + responseCode);
+    }
+
+    public void start(String aggregateServerUrl) {
+        uploadWeatherDataToAggregateServer(aggregateServerUrl);
+
+        // Initialise the ServerSocket to listen for incoming connections
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("ContentServer running on " + port + "...");
+            System.out.println("ContentServer running on port " + port + "...");
+
+            // Continuously listen for new client connections
             while (true) {
-                try (Socket socket = serverSocket.accept()) {
+                try (
+                        // Accept a new client connection
+                        Socket socket = serverSocket.accept();
+
+                        // Initialise BufferedReader to read incoming messages from the client
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                        // Write outgoing messages to the client
+                        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+
                     System.out.println("New client connected");
 
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        System.out.println("Received: " + line);
-                        // Handle the client's request here
-                    }
+                    // Receive data from the connected client
+                    String receivedData = reader.readLine();
+                    System.out.println("Received from client: " + receivedData);
+                    // TODO: send put request to aggregate server
                 } catch (IOException e) {
                     System.err.println("Error with client connection: " + e.getMessage());
                 }
             }
+
         } catch (IOException e) {
+            // Handle exceptions that occur during ServerSocket initialisation or operation
             System.err.println("Server error: " + e.getMessage());
         }
     }
@@ -91,6 +141,7 @@ public class ContentServer {
         String fileLocation = args[1];
 
         ContentServer server = new ContentServer(port, fileLocation);
-        server.start();
+        String aggregateServerUrl = (args.length >= 3) ? args[2] : "http://localhost:4567/weather";
+        server.start(aggregateServerUrl);
     }
 }
