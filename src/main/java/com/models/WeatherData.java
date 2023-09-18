@@ -1,22 +1,52 @@
 package com.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class WeatherData {
     private String id;
     private String name;
     private String state;
+
+    @SerializedName("time_zone")
     private String timeZone;
+
+    @SerializedName("lat")
     private double latitude;
+
+    @SerializedName("lon")
     private double longitude;
+
+    @SerializedName("local_date_time")
     private String localDateTime;
+
+    @SerializedName("local_date_time_full")
     private String localDateTimeFull;
+
+    @SerializedName("air_temp")
     private double airTemperature;
+
+    @SerializedName("apparent_t")
     private double apparentTemperature;
+
+    @SerializedName("cloud")
     private String cloudCondition;
+
+    @SerializedName("dewpt")
     private double dewPoint;
+
+    @SerializedName("press")
     private double pressure;
+
+    @SerializedName("rel_hum")
     private int relativeHumidity;
+
+    @SerializedName("wind_dir")
     private String windDirection;
+
+    @SerializedName("wind_spd_kmh")
     private int windSpeedKmh;
+
+    @SerializedName("wind_spd_kt")
     private int windSpeedKt;
 
     public WeatherData(String id, String name, String state, String timeZone, double latitude, double longitude,
@@ -43,7 +73,24 @@ public class WeatherData {
         this.windSpeedKt = windSpeedKt;
     }
 
-    public WeatherData() {
+    public WeatherData(String id) {
+        this.id = id;
+        this.name = null;
+        this.state = null;
+        this.timeZone = null;
+        this.latitude = 0.0;
+        this.longitude = 0.0;
+        this.localDateTime = null;
+        this.localDateTimeFull = null;
+        this.airTemperature = 0.0;
+        this.apparentTemperature = 0.0;
+        this.cloudCondition = null;
+        this.dewPoint = 0.0;
+        this.pressure = 0.0;
+        this.relativeHumidity = 0;
+        this.windDirection = null;
+        this.windSpeedKmh = 0;
+        this.windSpeedKt = 0;
     }
 
     public String getId() {
@@ -180,5 +227,25 @@ public class WeatherData {
 
     public void setWindSpeedKt(int windSpeedKt) {
         this.windSpeedKt = windSpeedKt;
+    }
+
+    public void showWeatherData() {
+        System.out.println("ID: " + id);
+        System.out.println("Name: " + name);
+        System.out.println("State: " + state);
+        System.out.println("TimeZone: " + timeZone);
+        System.out.println("Latitude: " + latitude);
+        System.out.println("Longitude: " + longitude);
+        System.out.println("LocalDateTime: " + localDateTime);
+        System.out.println("LocalDateTimeFull: " + localDateTimeFull);
+        System.out.println("AirTemperature: " + airTemperature);
+        System.out.println("ApparentTemperature: " + apparentTemperature);
+        System.out.println("CloudCondition: " + cloudCondition);
+        System.out.println("DewPoint: " + dewPoint);
+        System.out.println("Pressure: " + pressure);
+        System.out.println("RelativeHumidity: " + relativeHumidity);
+        System.out.println("WindDirection: " + windDirection);
+        System.out.println("WindSpeedKmh: " + windSpeedKmh);
+        System.out.println("WindSpeedKt: " + windSpeedKt);
     }
 }

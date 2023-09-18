@@ -1,0 +1,19 @@
+{
+  "id": "IDS60902",
+  "name": "Sydney (Harbour Bridge)",
+  "state": "NSW",
+  "time_zone": "AEST",
+  "lat": -33.9,
+  "lon": 151.2,
+  "local_date_time": "16/03:00pm",
+  "local_date_time_full": "20230716150000",
+  "air_temp": 25.1,
+  "apparent_t": 22.7,
+  "cloud": "Sunny",
+  "dewpt": 16.0,
+  "press": 1010.8,
+  "rel_hum": 45,
+  "wind_dir": "E",
+  "wind_spd_kmh": 12,
+  "wind_spd_kt": 7
+}

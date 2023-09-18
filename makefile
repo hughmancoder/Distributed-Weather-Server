@@ -8,8 +8,12 @@ build:
 run-server:
 	mvn exec:java -Dexec.mainClass="com.AggregationServer"
 
+
+CLIENT_ARGS = https://localhost 4567 IDS60901
+
 run-client:
-	mvn exec:java -Dexec.mainClass="com.GETClient"
+	mvn exec:java -Dexec.mainClass="com.GETClient" -Dexec.args="$(CLIENT_ARGS)"
+
 
 test:
 	@echo "Running Tests..."

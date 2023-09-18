@@ -8,11 +8,18 @@
   <name>my-app</name>
   <url>http://maven.apache.org</url>
   <dependencies>
-    <dependency>
+    <!-- <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
+    </dependency> -->
+
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version> <!-- Use the latest version -->
+        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

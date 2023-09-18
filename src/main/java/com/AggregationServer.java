@@ -1,33 +1,34 @@
 package com;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
-// TODO: manually implement 
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executors;
+import java.net.InetSocketAddress;
+import java.io.IOException;
+import java.util.TimerTask;
+import java.util.HashMap;
+import java.nio.file.*;
+import java.util.Timer;
 
+import com.google.gson.annotations.Since;
 import com.models.WeatherData;
 import com.utility.LamportClock;
 import com.utility.JsonUtils;
-import java.io.IOException;
-import java.util.concurrent.PriorityBlockingQueue;
 
 public class AggregationServer {
     private static final ReentrantLock lock = new ReentrantLock();
     public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
-    public static final String DATA_FILE_PATH = "../../resources/weather_data.json";
+    // TODO: args[1] is the path to the data file
+    private static final String DATA_FILE_PATH = "../../resources/weather_data.json";
+
     private static LamportClock lamportClock = new LamportClock();
     private static PriorityBlockingQueue<WeatherData> weatherDataQueue = new PriorityBlockingQueue<>();
-    public static HashMap<String, Long> lastActiveMap = new HashMap<>();
-    public static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
+    private static HashMap<String, Long> lastActiveMap = new HashMap<>();
+    private static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -41,14 +42,14 @@ public class AggregationServer {
             }
         }
         System.out.println("Running aggregation server on port " + port + "..");
-        try {
-            // TODO: data from content server
-            loadDataFromFile(DATA_FILE_PATH);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to load data from file.");
-            return;
-        }
+        // try {
+        // // TODO: data from content server
+        // // loadDataFromFile(DATA_FILE_PATH);
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // System.out.println("Failed to load data from file.");
+        // return;
+        // }
 
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -70,19 +71,46 @@ public class AggregationServer {
         }
     }
 
-    public static void saveWeatherDataMapToFile() {
-        // Lock to ensure the map is not modified while saving
+    public static void clearWeatherDataMap() {
         lock.lock();
         try {
-            String json = JsonUtils.toJson(weatherDataMap);
-            Path path = Paths.get(TEMP_STORAGE_PATH);
+            weatherDataMap.clear();
+        } finally {
+            lock.unlock();
+        }
+    }
 
-            // ensure directory exists
+    public static HashMap<String, WeatherData> getWeatherDataMap() {
+        return weatherDataMap;
+    }
+
+    public static HashMap<String, WeatherData> putToWeatherDataMap(WeatherData weatherData)
+            throws IllegalArgumentException {
+        lock.lock();
+        try {
+            String id = weatherData.getId();
+
+            if (id == null || id.isEmpty()) {
+                throw new IllegalArgumentException("WeatherData object must have a valid id");
+            }
+
+            weatherDataMap.put(id, weatherData);
+
+            return new HashMap<>(weatherDataMap); // returns a shallow copy
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public static void WeatherDataMapToFile() {
+        lock.lock();
+        try {
+            Path path = Paths.get(TEMP_STORAGE_PATH);
             Path parentDir = path.getParent();
             if (parentDir != null) {
                 Files.createDirectories(parentDir);
             }
-
+            String json = JsonUtils.hashMapToJson(weatherDataMap);
             Files.write(path, json.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,21 +122,23 @@ public class AggregationServer {
         }
     }
 
-    public static void loadDataFromFile(String filePath) throws IOException {
+    public static void FileToWeatherDataMap(String filePath) throws IOException {
+        lock.lock();
         try {
             if (Files.exists(Paths.get(filePath))) {
-                String json = new String(Files.readAllBytes(Paths.get(filePath)));
-                HashMap<String, WeatherData> dataMap = JsonUtils.fromJson(json, HashMap.class);
+                String json = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+                HashMap<String, WeatherData> dataMap = JsonUtils.jsonToHashMap(json);
                 if (dataMap != null) {
                     weatherDataMap.putAll(dataMap);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            // Handle IO Exception (maybe log it or notify the user)
+            throw new IOException("Failed to load data from file", e);
         } catch (Exception e) {
             e.printStackTrace();
-            // Handle any other exceptions (maybe log it or notify the user)
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -137,21 +167,21 @@ public class AggregationServer {
             }
         }
 
-        // TODO: implement to specificaiotn
+        // TODO
         private void handleGetRequest(HttpExchange httpExchange) throws IOException {
             lock.lock();
             try {
-                String json = JsonUtils.toJson(weatherDataMap);
-                byte[] response = json.getBytes();
-                httpExchange.sendResponseHeaders(200, response.length);
-                httpExchange.getResponseBody().write(response);
+                // String json = JsonUtils.toJson(weatherDataMap);
+                // byte[] response = json.getBytes();
+                // httpExchange.sendResponseHeaders(200, response.length);
+                // httpExchange.getResponseBody().write(response);
                 httpExchange.close();
             } finally {
                 lock.unlock();
             }
         }
 
-        // TODO: Implement
+        // TODO
         private void handlePutRequest(HttpExchange httpExchange) throws IOException {
             // TODO: Extract WeatherData and Lamport timestamp here
             // Example: WeatherData data = extractWeatherData(httpExchange);

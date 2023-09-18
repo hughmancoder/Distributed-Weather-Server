@@ -1,0 +1,17 @@
+id:IDS60902
+name:Sydney (Harbour Bridge)
+state:NSW
+time_zone:AEST
+lat:-339
+lon:1512
+local_date_time:16/03:00pm
+local_date_time_full:20230716150000
+air_temp:251
+apparent_t:227
+cloud:Sunny
+dewpt:160
+press:10108
+rel_hum:45
+wind_dir:E
+wind_spd_kmh:12
+wind_spd_kt:7
