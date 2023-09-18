@@ -17,20 +17,20 @@
 - [x] Basic `GETClient.java` with minimal functionality
 - [x] Read command-line parameters for server and port
 - [x] Implement GET request functionality
-- [ ] **Tests**: Unit tests for basic GET operations
+- [x] **Tests**: Unit tests for basic GET operations
 
 #### Content Server
 
 - [x] Basic `ContentServer.java` with minimal functionality
-- [ ] Read command-line parameters for server and file location
-- [ ] File reading and text parsing
-- [ ] **Tests**: Unit tests for individual features
+- [x] Read command-line parameters for server and file location
+- [x] File reading and text parsing
+- [x] **Tests**: Unit tests for individual features
 
 ### Phase 2: Communication & Basic Operations
 
 #### Basic Communication
 
-- [ ] Communication between Aggregation Server and GET Client
+- [x] Communication between Aggregation Server and GET Client
 - [ ] Communication between Aggregation Server and Content Server
 - [ ] **Tests**: Integration tests for communication
 

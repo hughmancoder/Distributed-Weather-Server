@@ -12,6 +12,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.models.WeatherData;
 
 public class JsonUtils {
@@ -22,10 +24,16 @@ public class JsonUtils {
         return gson.toJson(map);
     }
 
+    // TODO: test
     public static HashMap<String, WeatherData> jsonToHashMap(String json) {
         Type type = new TypeToken<HashMap<String, WeatherData>>() {
         }.getType();
         return gson.fromJson(json, type);
+    }
+
+    // TODO: test
+    public static JsonObject parseStringToJson(String jsonResponse) {
+        return JsonParser.parseString(jsonResponse).getAsJsonObject();
     }
 
     public static String toJson(WeatherData weatherData) {

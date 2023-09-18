@@ -12,7 +12,7 @@ import com.google.gson.JsonParser;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
 
-public class AggregationServerTests extends TestCase {
+public class AggregationServerUnitTest extends TestCase {
 
     private static final String TEST_FILE_PATH1 = "src/test/resources/test_weather_data_IDS60901.json";
     private static final String TEST_FILE_PATH2 = "src/test/resources/test_weather_data_IDS60902.json";

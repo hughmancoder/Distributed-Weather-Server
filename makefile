@@ -1,20 +1,26 @@
+CONTENT_SERVER_ARGS = 4568 src/main/resources/weather_data.txt
+AGGREGATION_SERVER_ARGS = 4567
+CLIENT_ARGS = http://localhost 4567 
+
 build:
 	mvn clean compile
 
-# run-app:
-# 	@echo "Running App..."
-# 	java -cp target/my-app-1.0-SNAPSHOT.jar com.App
+run-servers:
+	run-aggregation-server run-content-server
+	
+run-aggregation-server:
+	mvn exec:java -Dexec.mainClass="com.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
 
-run-server:
-	mvn exec:java -Dexec.mainClass="com.AggregationServer"
-
-
-CLIENT_ARGS = https://localhost 4567 IDS60901
-
+run-content-server:
+	mvn exec:java -Dexec.mainClass="com.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
+	
 run-client:
 	mvn exec:java -Dexec.mainClass="com.GETClient" -Dexec.args="$(CLIENT_ARGS)"
-
 
 test:
 	@echo "Running Tests..."
 	mvn test
+
+test_: 
+	mvn test -Dtest=GETClientIntegrationTest
+
