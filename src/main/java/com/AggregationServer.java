@@ -2,6 +2,7 @@ package com;
 
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -9,84 +10,31 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.TimerTask;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
 import java.nio.file.*;
-import java.util.Timer;
 
 import com.google.gson.JsonParseException;
 import com.models.QueryData;
 import com.models.WeatherData;
+import com.models.TimedEntry;
 import com.utility.LamportClock;
 import com.utility.JsonUtils;
 
 public class AggregationServer {
     public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
 
-    private static final ReentrantLock lock = new ReentrantLock();
-    private static LamportClock lamportClock = new LamportClock();
-    private static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
-
-    // private static PriorityBlockingQueue<WeatherData> weatherDataQueue = new
-    // PriorityBlockingQueue<>();
-    // private static HashMap<String, Long> lastActiveMap = new HashMap<>();
-
-    /*
-     * public static void main(String[] args) {
-     * int port = 4567;
-     * 
-     * if (args.length > 0) {
-     * try {
-     * port = Integer.parseInt(args[0]);
-     * } catch (NumberFormatException e) {
-     * e.printStackTrace();
-     * System.out.println("Invalid port number. Using default port 4567.");
-     * }
-     * }
-     * System.out.println("Running aggregation server on port " + port + "..");
-     * 
-     * // TODO: Load initial data from content server, if you need to
-     * try {
-     * // Uncomment this once you have the loadDataFromFile method ready.
-     * // loadDataFromFile(DATA_FILE_PATH);
-     * // put to weather map
-     * } catch (Exception e) {
-     * System.out.println("Failed to load data from file");
-     * e.printStackTrace();
-     * }
-     * 
-     * try {
-     * HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-     * server.createContext("/weather", new DataHandler());
-     * server.setExecutor(Executors.newFixedThreadPool(10));
-     * server.start();
-     * 
-     * Timer timer = new Timer();
-     * timer.schedule(new TimerTask() {
-     * 
-     * @Override
-     * public void run() {
-     * removeOldEntries();
-     * }
-     * }, 30000, 30000);
-     * 
-     * } catch (IOException e) {
-     * e.printStackTrace();
-     * System.out.println("Failed to start HTTP server.");
-     * }
-     * }
-     */
-
     private static HttpServer server;
     private static Timer timer;
     private static boolean isRunning = false;
+    private static final ReentrantLock lock = new ReentrantLock();
+    private static LamportClock lamportClock = new LamportClock();
+    private static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
+    private static PriorityBlockingQueue<TimedEntry> weatherDataQueue = new PriorityBlockingQueue<>();
 
     public static void main(String[] args) {
         int port = 4567;
@@ -229,6 +177,7 @@ public class AggregationServer {
         private void GETRequest(HttpExchange httpExchange) throws IOException {
             lock.lock();
             try {
+                lamportClock.tick();
                 URI requestURI = httpExchange.getRequestURI();
                 Map<String, String> queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
 
@@ -237,6 +186,7 @@ public class AggregationServer {
 
                 if (stationId != null) {
                     // Send data for the specific station
+
                     WeatherData weatherData = weatherDataMap.get(stationId);
                     if (weatherData != null) {
                         json = JsonUtils.toJson(weatherData);
@@ -262,6 +212,7 @@ public class AggregationServer {
         private void PUTRequest(HttpExchange httpExchange) throws IOException {
             lock.lock();
             try {
+                lamportClock.tick();
                 // Read the request body
                 InputStream is = httpExchange.getRequestBody();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -309,7 +260,11 @@ public class AggregationServer {
 
         lock.lock();
         try {
-            // TODO: update other map
+            lamportClock.tick();
+            data.setLamportTime(lamportClock.getTime()); // Stamp the data with Lamport time
+            weatherDataMap.put(data.getId(), data);
+
+            weatherDataQueue.add(new TimedEntry(data.getId(), System.currentTimeMillis()));
             weatherDataMap.put(data.getId(), data);
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,12 +279,26 @@ public class AggregationServer {
     private static void removeOldEntries() {
         lock.lock();
         try {
-            long currentTime = lamportClock.getTime();
-            // TODO: get string key and remove from weatherDataMap;
-            // lastActiveMap.entrySet().removeIf(entryx -> currentTime - entry.getValue() >
-            // 30);
+            long currentTime = System.currentTimeMillis();
+            long thresholdTime = currentTime - 30 * 1000;
+
+            weatherDataQueue.removeIf(entry -> entry.getTime() < thresholdTime);
+
+            Set<String> keysInQueue = new HashSet<>();
+            for (TimedEntry entry : weatherDataQueue) {
+                keysInQueue.add(entry.getId());
+            }
+
+            Iterator<Map.Entry<String, WeatherData>> iterator = weatherDataMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, WeatherData> entry = iterator.next();
+                if (!keysInQueue.contains(entry.getKey())) {
+                    iterator.remove();
+                }
+            }
         } finally {
-            lock.unlock();
+            lock.unlock(); // Make sure to unlock in the finally block
         }
     }
+
 }

@@ -54,6 +54,8 @@ public class WeatherData {
     @SerializedName("wind_spd_kt")
     private int windSpeedKt;
 
+    private long lamportTime;
+
     public WeatherData(String id, String name, String state, String timeZone, double latitude, double longitude,
             String localDateTime, String localDateTimeFull, double airTemperature, double apparentTemperature,
             String cloudCondition, double dewPoint, double pressure, int relativeHumidity, String windDirection,
@@ -232,6 +234,14 @@ public class WeatherData {
 
     public void setWindSpeedKt(int windSpeedKt) {
         this.windSpeedKt = windSpeedKt;
+    }
+
+    public long getLamportTime() {
+        return lamportTime;
+    }
+
+    public void setLamportTime(long lamportTime) {
+        this.lamportTime = lamportTime;
     }
 
     public void showWeatherData() {

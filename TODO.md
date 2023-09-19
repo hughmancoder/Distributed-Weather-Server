@@ -43,14 +43,13 @@
 #### GET Operations
 
 - [x] Advanced GET operations in GET Client
-- [ ] **Tests**: Unit and Integration tests for GET operations
+- [x] **Tests**: Unit and Integration tests for GET operations
 
 ### Phase 3: Advanced Features & Error Handling
 
 #### Lamport Clocks
 
-- [ ] Implementation in all components
-- [ ] Lamport Clocks: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itself to synchronize with other systems.
+- [x] Implementation in all components: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itself to synchronize with other systems.
 - [ ] **Tests**: Unit and Integration tests for synchronization
 
 #### Error Handling

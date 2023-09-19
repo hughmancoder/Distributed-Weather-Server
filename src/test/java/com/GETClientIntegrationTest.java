@@ -42,7 +42,7 @@ public class GETClientIntegrationTest {
 
     @Test
     public void testGETRequestByIdReturnsValidResult() {
-        performGETRequest("IDS60901", 17);
+        performGETRequest("IDS60901", 18);
     }
 
     private void performGETRequest(String stationId, int expectedJsonSize) {
