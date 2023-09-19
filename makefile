@@ -17,10 +17,11 @@ run-content-server:
 run-client:
 	mvn exec:java -Dexec.mainClass="com.GETClient" -Dexec.args="$(CLIENT_ARGS)"
 
-test:
+test-all:
 	@echo "Running Tests..."
 	mvn test
 
-test_: 
-	mvn test -Dtest=ContentServerIntegrationTests.java
+run-integration-tests: 
+	mvn test -Dtest=ContentServerIntegrationTest,GETClientIntegrationTest
+
 

@@ -47,14 +47,12 @@ public class UtilityTests extends TestCase {
 
     public void testGetDataFromJsonFile() {
         String testFilePath = "src/test/resources/test_weather_data_IDS60901.json";
-        try {
-            WeatherData weatherData = JsonUtils.getDataFromJsonFile(testFilePath);
-            assertNotNull(weatherData);
-            assertEquals("IDS60901", weatherData.getId());
-            assertEquals("SA", weatherData.getState());
-            assertEquals(60, weatherData.getRelativeHumidity());
-        } catch (IOException e) {
-            fail("An IOException occurred.");
-        }
+
+        WeatherData weatherData = JsonUtils.getDataFromJsonFile(testFilePath);
+        assertNotNull(weatherData);
+        assertEquals("IDS60901", weatherData.getId());
+        assertEquals("SA", weatherData.getState());
+        assertEquals(60, weatherData.getRelativeHumidity());
+
     }
 }

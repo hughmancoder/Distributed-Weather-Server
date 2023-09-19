@@ -1,6 +1,6 @@
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/WeatherData.java
 /Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/AggregationServerUnitTest.java
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/ContentServerIntegrationTests.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/SynchronizationTests.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/WeatherDataUnitTest.java
 /Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/UtilityTests.java
 /Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/GETClientIntegrationTest.java
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/ContentServerUnitTest.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/ContentServerIntegrationTest.java

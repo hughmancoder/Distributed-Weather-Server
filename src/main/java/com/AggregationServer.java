@@ -27,13 +27,65 @@ import com.utility.LamportClock;
 import com.utility.JsonUtils;
 
 public class AggregationServer {
+    public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
+
     private static final ReentrantLock lock = new ReentrantLock();
     private static LamportClock lamportClock = new LamportClock();
-    private static PriorityBlockingQueue<WeatherData> weatherDataQueue = new PriorityBlockingQueue<>();
-    private static HashMap<String, Long> lastActiveMap = new HashMap<>();
     private static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
 
-    public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
+    // private static PriorityBlockingQueue<WeatherData> weatherDataQueue = new
+    // PriorityBlockingQueue<>();
+    // private static HashMap<String, Long> lastActiveMap = new HashMap<>();
+
+    /*
+     * public static void main(String[] args) {
+     * int port = 4567;
+     * 
+     * if (args.length > 0) {
+     * try {
+     * port = Integer.parseInt(args[0]);
+     * } catch (NumberFormatException e) {
+     * e.printStackTrace();
+     * System.out.println("Invalid port number. Using default port 4567.");
+     * }
+     * }
+     * System.out.println("Running aggregation server on port " + port + "..");
+     * 
+     * // TODO: Load initial data from content server, if you need to
+     * try {
+     * // Uncomment this once you have the loadDataFromFile method ready.
+     * // loadDataFromFile(DATA_FILE_PATH);
+     * // put to weather map
+     * } catch (Exception e) {
+     * System.out.println("Failed to load data from file");
+     * e.printStackTrace();
+     * }
+     * 
+     * try {
+     * HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+     * server.createContext("/weather", new DataHandler());
+     * server.setExecutor(Executors.newFixedThreadPool(10));
+     * server.start();
+     * 
+     * Timer timer = new Timer();
+     * timer.schedule(new TimerTask() {
+     * 
+     * @Override
+     * public void run() {
+     * removeOldEntries();
+     * }
+     * }, 30000, 30000);
+     * 
+     * } catch (IOException e) {
+     * e.printStackTrace();
+     * System.out.println("Failed to start HTTP server.");
+     * }
+     * }
+     */
+
+    private static HttpServer server;
+    private static Timer timer;
+    private static boolean isRunning = false;
 
     public static void main(String[] args) {
         int port = 4567;
@@ -43,32 +95,23 @@ public class AggregationServer {
                 port = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
-                System.out.println("Invalid port number. Using default port 4567.");
+                System.out.println("Invalid port number. Using default port 4567");
             }
         }
+
+        start(port);
+    }
+
+    public static void start(int port) {
         System.out.println("Running aggregation server on port " + port + "..");
-
-        // Load data from content server, if you need to
         try {
-            // Uncomment this once you have the loadDataFromFile method ready.
-            // loadDataFromFile(DATA_FILE_PATH);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to load data from file.");
-            // Uncomment the below line if you want to exit the program in case of an error.
-            // return;
-        }
 
-        // Initialize the server with some mock data
-        populateInitialData();
-
-        try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+            server = HttpServer.create(new InetSocketAddress(port), 0);
             server.createContext("/weather", new DataHandler());
             server.setExecutor(Executors.newFixedThreadPool(10));
             server.start();
 
-            Timer timer = new Timer();
+            timer = new Timer();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -76,21 +119,23 @@ public class AggregationServer {
                 }
             }, 30000, 30000);
 
-        } catch (IOException e) {
+            isRunning = true;
+
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Failed to start HTTP server.");
         }
     }
 
-    // TODO: remove method
-    public static void populateInitialData() {
-        lock.lock();
-        try {
-            WeatherData weatherData1 = new WeatherData("IDS60901");
-            weatherDataMap.put(weatherData1.getId(), weatherData1);
-
-        } finally {
-            lock.unlock();
+    public static void stop() {
+        if (isRunning) {
+            isRunning = false;
+            if (timer != null) {
+                timer.cancel();
+            }
+            if (server != null) {
+                server.stop(0);
+            }
         }
     }
 
@@ -160,17 +205,6 @@ public class AggregationServer {
             throw new IOException("Failed to load data from file", e);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private static void removeOldEntries() {
-        lock.lock();
-        try {
-            long currentTime = lamportClock.getTime();
-            // TODO: get string key and remove from weatherDataMap;
-            lastActiveMap.entrySet().removeIf(entry -> currentTime - entry.getValue() > 30);
         } finally {
             lock.unlock();
         }
@@ -298,5 +332,17 @@ public class AggregationServer {
         }
 
         return statusCode;
+    }
+
+    private static void removeOldEntries() {
+        lock.lock();
+        try {
+            long currentTime = lamportClock.getTime();
+            // TODO: get string key and remove from weatherDataMap;
+            // lastActiveMap.entrySet().removeIf(entryx -> currentTime - entry.getValue() >
+            // 30);
+        } finally {
+            lock.unlock();
+        }
     }
 }

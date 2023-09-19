@@ -1,147 +1,120 @@
 package com;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import com.models.WeatherData;
+import com.utility.JsonUtils;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
-import java.util.HashMap;
-import com.models.WeatherData;
-import com.utility.JsonUtils;
 
 public class ContentServer {
-
-    private int port;
+    private static String aggregate_server_url = "http://localhost:4567/weather";
+    private String port;
     private String fileLocation;
+    private ServerSocket serverSocket;
+    private volatile boolean isRunning;
 
-    public ContentServer(int port, String fileLocation) {
+    public ContentServer(String port, String fileLocation) {
         this.port = port;
         this.fileLocation = fileLocation;
     }
 
-    public void uploadWeatherDataToAggregateServer(String aggregateServerUrl) {
-        WeatherData weatherData = readFileAndParse();
-        if (weatherData != null) {
-            String json = JsonUtils.toJson(weatherData);
-            try {
-                PUTRequest(json, aggregateServerUrl);
-            } catch (IOException e) {
-                System.err.println("Failed to upload data to aggregate server: " + e.getMessage());
-            }
-        }
-    }
-
-    public void PUTRequest(String json, String aggregateServerUrl) throws IOException {
-        URL url = new URL(aggregateServerUrl);
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-        // Set up the connection for a PUT request
-        con.setRequestMethod("PUT");
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setDoOutput(true);
-
-        // Write JSON payload
-        try (DataOutputStream writer = new DataOutputStream(con.getOutputStream())) {
-            writer.writeBytes(json);
-            writer.flush();
-        }
-
-        int responseCode = con.getResponseCode();
-        System.out.println("Sent PUT request to aggregate server. Response Code: " + responseCode);
-    }
-
-    public void start(String aggregateServerUrl) {
-        uploadWeatherDataToAggregateServer(aggregateServerUrl);
-
-        // Initialise the ServerSocket to listen for incoming connections
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+    public void start() {
+        isRunning = true;
+        uploadWeatherDataToAggregateServer(aggregate_server_url, fileLocation);
+        try {
+            serverSocket = new ServerSocket(Integer.parseInt(port));
             System.out.println("ContentServer running on port " + port + "...");
-
-            // Continuously listen for new client connections
-            while (true) {
-                try (
-                        // Accept a new client connection
-                        Socket socket = serverSocket.accept();
-
-                        // Initialise BufferedReader to read incoming messages from the client
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-                        // Write outgoing messages to the client
-                        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-
-                    System.out.println("New client connected");
-
-                    // Receive data from the connected client
-                    String receivedData = reader.readLine();
-                    System.out.println("Received from client: " + receivedData);
-                    // TODO: send put request to aggregate server
-                } catch (IOException e) {
-                    System.err.println("Error with client connection: " + e.getMessage());
-                }
-            }
-
+            listenForClients();
         } catch (IOException e) {
-            // Handle exceptions that occur during ServerSocket initialisation or operation
             System.err.println("Server error: " + e.getMessage());
         }
     }
 
-    public WeatherData readFileAndParse() {
-        HashMap<String, String> map = new HashMap<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileLocation))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":");
-                if (parts.length >= 2) {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim();
-                    map.put(key, value);
-                }
+    public void stop() {
+        isRunning = false;
+        try {
+            if (serverSocket != null) {
+                serverSocket.close();
             }
         } catch (IOException e) {
-            System.err.println("File reading error: " + e.getMessage());
-            return null;
+            System.err.println("Error stopping server: " + e.getMessage());
+        }
+    }
+
+    private void listenForClients() {
+        while (isRunning) {
+            try (Socket socket = serverSocket.accept();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+
+                String receivedData = reader.readLine();
+                System.out.println("Received from client: " + receivedData);
+                String filePath = receivedData.split(" ")[1];
+                System.out.println("Reading file path " + filePath);
+
+                // TODO: PUT received data into aggregate server
+
+            } catch (IOException e) {
+                if (isRunning) {
+                    System.err.println("Error with client connection: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    private void uploadWeatherDataToAggregateServer(String aggregateServerUrl, String fileLocation) {
+        WeatherData weatherData = WeatherData.readFileAndParse(fileLocation);
+        if (weatherData == null) {
+            return;
         }
 
-        // Use the map to construct a WeatherData object
-        WeatherData weatherData = new WeatherData(
-                map.get("id"),
-                map.get("name"),
-                map.get("state"),
-                map.get("time_zone"),
-                Double.parseDouble(map.get("lat")),
-                Double.parseDouble(map.get("lon")),
-                map.get("local_date_time"),
-                map.get("local_date_time_full"),
-                Double.parseDouble(map.get("air_temp")),
-                Double.parseDouble(map.get("apparent_t")),
-                map.get("cloud"),
-                Double.parseDouble(map.get("dewpt")),
-                Double.parseDouble(map.get("press")),
-                Integer.parseInt(map.get("rel_hum")),
-                map.get("wind_dir"),
-                Integer.parseInt(map.get("wind_spd_kmh")),
-                Integer.parseInt(map.get("wind_spd_kt")));
+        String json = JsonUtils.toJson(weatherData);
+        PUTRequest(json, aggregateServerUrl);
+    }
 
-        return weatherData;
+    public static void PUTRequest(String json, String aggregateServerUrl) {
+        try {
+            URL url = new URL(aggregateServerUrl);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("PUT");
+            con.setRequestProperty("Content-Type", "application/json; utf-8");
+            con.setDoOutput(true);
+
+            try (DataOutputStream writer = new DataOutputStream(con.getOutputStream())) {
+                writer.writeBytes(json);
+                writer.flush();
+            }
+
+            int responseCode = con.getResponseCode();
+            System.out.println("Sent PUT request to aggregate server. Response Code: " + responseCode);
+        } catch (IOException e) {
+            System.err.println("Failed to upload data to aggregate server: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
         if (args.length < 2) {
-            System.out.println("Usage: java ContentServer <port> <fileLocation>");
+            System.out.println("Usage: java ContentServer <port> <filePath>");
             return;
         }
 
-        int port = Integer.parseInt(args[0]);
+        String port = args[0];
         String fileLocation = args[1];
-
+        if (args.length >= 3) {
+            aggregate_server_url = args[2];
+        }
         ContentServer server = new ContentServer(port, fileLocation);
-        String aggregateServerUrl = (args.length >= 3) ? args[2] : "http://localhost:4567/weather";
-        server.start(aggregateServerUrl);
+        server.start();
+
+        // For demonstration purposes: stop the server after 60 seconds
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {
+            // Handle interruption
+        }
+        server.stop();
     }
 }

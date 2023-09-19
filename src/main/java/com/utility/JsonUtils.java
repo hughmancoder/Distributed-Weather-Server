@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -50,16 +51,18 @@ public class JsonUtils {
         }
     }
 
-    public static WeatherData getDataFromJsonFile(String filePath) throws IOException {
+    public static WeatherData getDataFromJsonFile(String filePath) {
         Path path = Paths.get(filePath);
         try (Reader reader = Files.newBufferedReader(path)) {
             WeatherData weatherData = gson.fromJson(reader, WeatherData.class);
             if (weatherData == null) {
-                throw new IOException("Parsed data is null, likely due to incorrect JSON format.");
+                System.err.println("Parsed data is null, likely due to incorrect JSON format");
+                return null;
             }
             return weatherData;
         } catch (IOException e) {
-            throw new IOException("An error occurred while reading the JSON file", e);
+            System.err.println("An error occurred while reading the JSON file: " + e.getMessage());
+            return null;
         }
     }
 }

@@ -1,7 +1,6 @@
 package com;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
 import com.utility.LamportClock;
@@ -12,12 +11,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class GETClient {
+    public static final String AGGREGATION_SERVER_PORT = "4567";
 
     public static String GETRequest(String serverUrl, String port, String stationId, LamportClock lamportClock)
             throws Exception {
 
         if (serverUrl == null || serverUrl.isEmpty()) {
             serverUrl = "http://localhost";
+        }
+        if (port == null || port.isEmpty()) {
+            port = AGGREGATION_SERVER_PORT;
         }
         String finalUrl = (stationId != null && !stationId.isEmpty())
                 ? serverUrl + ":" + port + "/weather?station=" + stationId

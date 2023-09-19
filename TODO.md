@@ -50,8 +50,8 @@
 #### Lamport Clocks
 
 - [ ] Implementation in all components
-- [ ] **Tests**: Unit and Integration tests for synchronization
 - [ ] Lamport Clocks: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itself to synchronize with other systems.
+- [ ] **Tests**: Unit and Integration tests for synchronization
 
 #### Error Handling
 
