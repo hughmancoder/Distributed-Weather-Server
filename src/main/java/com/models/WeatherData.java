@@ -268,7 +268,7 @@ public class WeatherData {
                 }
             }
         } catch (IOException e) {
-            System.err.println("File reading error: " + e.getMessage());
+            System.err.println("File located at " + fileLocation + "reading error " + e.getMessage());
             return null;
         }
 

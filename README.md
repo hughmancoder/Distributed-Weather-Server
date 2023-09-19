@@ -10,6 +10,22 @@ A distributed system to aggregate and serve weather data in a coordinated manner
 2. **Content Server**: Reads and uploads weather data to the Aggregation Server.
 3. **GET Client**: Queries the Aggregation Server for weather data and displays it.
 
+## How to run
+
+`Refer to makefile`
+
+## API Documentation
+
+## Content server
+
+### Uploading a new file to aggregation server via content server
+
+For example if the content server is running at localhost:4568
+
+http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60901.txt
+
+http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60902.txt
+
 ### Aggregation Server
 
 - **HTTP Endpoints**: Supports HTTP PUT for ingesting new weather data and HTTP GET for retrieving stored weather data.
@@ -43,23 +59,3 @@ A distributed system to aggregate and serve weather data in a coordinated manner
 - Data from inactive Content Servers or outdated weather data are be purged to maintain data integrity and relevance.
 
 ---
-
-## How to run
-
-`Refer to makefile`
-
-### Compiling
-
-From root directory run `mvn compile`
-
-### Running the app
-
-`mvn exec:java -Dexec.mainClass="com.example.App`
-
-### Running tests
-
-`mvn test`
-
-### cleanup
-
-`mvn clean`

@@ -1,21 +1,10 @@
 CONTENT_SERVER_ARGS = 4568 src/main/resources/weather_data.txt
 AGGREGATION_SERVER_ARGS = 4567
 CLIENT_ARGS = http://localhost 4567 
+CURRENT_DIR := $(shell pwd)
 
 build:
 	mvn clean compile
-
-run-servers:
-	run-aggregation-server run-content-server
-	
-run-aggregation-server:
-	mvn exec:java -Dexec.mainClass="com.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
-
-run-content-server:
-	mvn exec:java -Dexec.mainClass="com.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
-	
-run-client:
-	mvn exec:java -Dexec.mainClass="com.GETClient" -Dexec.args="$(CLIENT_ARGS)"
 
 test-all:
 	@echo "Running Tests..."
@@ -24,4 +13,19 @@ test-all:
 run-integration-tests: 
 	mvn test -Dtest=ContentServerIntegrationTest,GETClientIntegrationTest
 
+run-all-servers-linux:
+	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
+	gnome-terminal --tab --active --title="Content Server" -- make run-content-server	
 
+run-all-servers-mac:
+	osascript -e 'tell app "Terminal" to do script "cd $(CURRENT_DIR) && make run-aggregation-server"'
+	osascript -e 'tell app "Terminal" to do script "cd $(CURRENT_DIR) && make run-content-server"'
+
+run-aggregation-server:
+	mvn exec:java -Dexec.mainClass="com.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
+
+run-content-server:
+	mvn exec:java -Dexec.mainClass="com.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
+
+run-client:
+	mvn exec:java -Dexec.mainClass="com.GETClient" -Dexec.args="$(CLIENT_ARGS)"

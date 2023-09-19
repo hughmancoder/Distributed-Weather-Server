@@ -22,6 +22,7 @@ import java.nio.file.*;
 import java.util.Timer;
 
 import com.google.gson.JsonParseException;
+import com.models.QueryData;
 import com.models.WeatherData;
 import com.utility.LamportClock;
 import com.utility.JsonUtils;
@@ -229,7 +230,7 @@ public class AggregationServer {
             lock.lock();
             try {
                 URI requestURI = httpExchange.getRequestURI();
-                Map<String, String> queryParameters = parseQueryParameters(requestURI.getQuery());
+                Map<String, String> queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
 
                 String stationId = queryParameters.get("station");
                 String json;
@@ -256,20 +257,6 @@ public class AggregationServer {
                 lock.unlock();
                 httpExchange.close();
             }
-        }
-
-        // Helper method to parse query parameters
-        private Map<String, String> parseQueryParameters(String query) throws UnsupportedEncodingException {
-            Map<String, String> result = new HashMap<>();
-            if (query != null) {
-                for (String param : query.split("&")) {
-                    String[] entry = param.split("=");
-                    if (entry.length > 1) {
-                        result.put(URLDecoder.decode(entry[0], "UTF-8"), URLDecoder.decode(entry[1], "UTF-8"));
-                    }
-                }
-            }
-            return result;
         }
 
         private void PUTRequest(HttpExchange httpExchange) throws IOException {

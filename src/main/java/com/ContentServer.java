@@ -1,5 +1,6 @@
 package com;
 
+import com.models.QueryData;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
 
@@ -7,7 +8,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 
 public class ContentServer {
     private static String aggregate_server_url = "http://localhost:4567/weather";
@@ -45,17 +49,40 @@ public class ContentServer {
     }
 
     private void listenForClients() {
+        String lastProcessedRoute = "";
+
         while (isRunning) {
             try (Socket socket = serverSocket.accept();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
 
                 String receivedData = reader.readLine();
-                System.out.println("Received from client: " + receivedData);
-                String filePath = receivedData.split(" ")[1];
-                System.out.println("Reading file path " + filePath);
+                System.out.println("Received from client: " + receivedData + " Client IP: "
+                        + socket.getInetAddress().getHostAddress());
 
-                // TODO: PUT received data into aggregate server
+                URI requestURI;
+                String route = "";
+                Map<String, String> queryParameters = null;
+
+                if (receivedData != null && receivedData.split(" ").length > 1) {
+                    route = receivedData.split(" ")[1];
+
+                    // only process request if route changes
+                    if (!route.equals(lastProcessedRoute)) {
+                        lastProcessedRoute = route;
+
+                        try {
+                            requestURI = new URI(route);
+                            queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
+
+                            String filePath = queryParameters.get("filePath");
+                            uploadWeatherDataToAggregateServer(aggregate_server_url, filePath);
+
+                        } catch (URISyntaxException e) {
+                            System.err.println("Invalid URI syntax: " + e.getMessage());
+                        }
+                    }
+                }
 
             } catch (IOException e) {
                 if (isRunning) {

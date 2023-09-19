@@ -40,9 +40,8 @@ public class ContentServerIntegrationTest {
     @After
     public void teardown() {
         AggregationServer.stop();
-        if (contentServer != null) {
-            contentServer.stop();
-        }
+        contentServer.stop();
+
     }
 
     @Test

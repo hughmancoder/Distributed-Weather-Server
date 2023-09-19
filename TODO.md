@@ -42,7 +42,7 @@
 
 #### GET Operations
 
-- [ ] Advanced GET operations in GET Client
+- [x] Advanced GET operations in GET Client
 - [ ] **Tests**: Unit and Integration tests for GET operations
 
 ### Phase 3: Advanced Features & Error Handling
