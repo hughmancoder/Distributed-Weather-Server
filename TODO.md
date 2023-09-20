@@ -49,7 +49,7 @@
 
 #### Lamport Clocks
 
-- [x] Implementation in all components: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itself to synchronize with other systems.
+- [x] Implementation in all components: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itsmake relf to synchronize with other systems.
 - [ ] **Tests**: Unit and Integration tests for synchronization
 
 #### Error Handling

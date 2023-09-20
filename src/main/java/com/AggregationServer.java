@@ -1,6 +1,7 @@
 package com;
 
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -33,6 +34,7 @@ public class AggregationServer {
     private static boolean isRunning = false;
     private static final ReentrantLock lock = new ReentrantLock();
     private static LamportClock lamportClock = new LamportClock();
+    private static AtomicLong lastUpdateTime = new AtomicLong(0);
     private static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
     private static PriorityBlockingQueue<TimedEntry> weatherDataQueue = new PriorityBlockingQueue<>();
 
@@ -232,7 +234,8 @@ public class AggregationServer {
                     return;
                 }
                 // Call the static PUTRequest to update data and get the status code
-                int statusCode = AggregationServer.PUTRequest(weatherData);
+                long currentTime = System.currentTimeMillis();
+                int statusCode = AggregationServer.PUTRequest(weatherData, currentTime);
 
                 // Send the response headers
                 httpExchange.sendResponseHeaders(statusCode, 0);
@@ -250,29 +253,52 @@ public class AggregationServer {
         }
     }
 
-    public static int PUTRequest(WeatherData data) {
-        int statusCode;
-        if (weatherDataMap.isEmpty()) {
-            statusCode = 201; // Created
-        } else {
-            statusCode = 200; // OK
-        }
+    // public static int PUTRequest(WeatherData data,) {
+    // int statusCode;
+    // if (weatherDataMap.isEmpty()) {
+    // statusCode = 201; // Created
+    // } else {
+    // statusCode = 200; // OK
+    // }
 
+    // lock.lock();
+    // try {
+    // lamportClock.tick();
+    // data.setLamportTime(lamportClock.getTime()); // Stamp the data with Lamport
+    // time
+    // weatherDataMap.put(data.getId(), data);
+
+    // weatherDataQueue.add(new TimedEntry(data.getId(),
+    // System.currentTimeMillis()));
+    // weatherDataMap.put(data.getId(), data);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // statusCode = 500; // Internal Server Error
+    // } finally {
+    // lock.unlock();
+    // }
+
+    // return statusCode;
+    // }
+    public static int PUTRequest(WeatherData data, long incomingTime) {
+        int statusCode;
         lock.lock();
         try {
+            lamportClock.update(incomingTime);
             lamportClock.tick();
-            data.setLamportTime(lamportClock.getTime()); // Stamp the data with Lamport time
-            weatherDataMap.put(data.getId(), data);
 
-            weatherDataQueue.add(new TimedEntry(data.getId(), System.currentTimeMillis()));
+            data.setLamportTime(lamportClock.getTime());
+            lastUpdateTime.set(lamportClock.getTime());
+
             weatherDataMap.put(data.getId(), data);
+            weatherDataQueue.add(new TimedEntry(data.getId(), lamportClock.getTime()));
+            statusCode = (weatherDataMap.size() == 1) ? 201 : 200;
         } catch (Exception e) {
             e.printStackTrace();
             statusCode = 500; // Internal Server Error
         } finally {
             lock.unlock();
         }
-
         return statusCode;
     }
 

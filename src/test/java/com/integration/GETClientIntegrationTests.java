@@ -1,4 +1,4 @@
-package com;
+package com.integration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -9,12 +9,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.AggregationServer;
+import com.GETClient;
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
 import com.utility.LamportClock;
 
-public class GETClientIntegrationTest {
+public class GETClientIntegrationTests {
     private final String testFilePath1 = "src/test/resources/test_weather_data_IDS60901.json";
     private final String testFilePath2 = "src/test/resources/test_weather_data_IDS60902.json";
     private final String serverUrl = "http://localhost";

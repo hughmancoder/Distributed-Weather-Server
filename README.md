@@ -16,6 +16,14 @@ A distributed system to aggregate and serve weather data in a coordinated manner
 
 ## API Documentation
 
+## Aggregation server
+
+To get all weather on aggregate server
+
+http://localhost:4567/weather/
+
+To get weather by Id on aggregate server
+
 ## Content server
 
 ### Uploading a new file to aggregation server via content server
@@ -25,6 +33,10 @@ For example if the content server is running at localhost:4568
 http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60901.txt
 
 http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60902.txt
+
+## Running tests
+
+Make sure port aggregation server and content server are not running or alternatively 4567 and 4568 are free
 
 ### Aggregation Server
 

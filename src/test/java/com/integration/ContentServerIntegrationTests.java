@@ -1,4 +1,4 @@
-package com;
+package com.integration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
@@ -14,12 +14,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 
+import com.AggregationServer;
+import com.ContentServer;
+import com.GETClient;
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
 import com.utility.LamportClock;
 
-public class ContentServerIntegrationTest {
+public class ContentServerIntegrationTests {
     private static final String TEST_FILE_PATH_1 = "src/test/resources/test_weather_data_IDS60901.json";
     private static final String TEST_FILE_PATH_2 = "src/test/resources/test_weather_data_IDS60902.json";
     private static final String TEST_FILE_PATH_3 = "src/test/resources/test_weather_data_IDS60903.txt";

@@ -3,6 +3,7 @@ package com;
 import com.models.QueryData;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
+import com.utility.LamportClock;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -14,6 +15,7 @@ import java.net.URL;
 import java.util.Map;
 
 public class ContentServer {
+    private static LamportClock lamportClock = new LamportClock();
     private static String aggregate_server_url = "http://localhost:4567/weather";
     private String port;
     private String fileLocation;
@@ -55,17 +57,19 @@ public class ContentServer {
             try (Socket socket = serverSocket.accept();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
-
+                lamportClock.tick();
                 String receivedData = reader.readLine();
                 System.out.println("Received from client: " + receivedData + " Client IP: "
                         + socket.getInetAddress().getHostAddress());
 
                 URI requestURI;
                 String route = "";
+                String request = "";
                 Map<String, String> queryParameters = null;
 
                 if (receivedData != null && receivedData.split(" ").length > 1) {
                     route = receivedData.split(" ")[1];
+                    request = receivedData.split(" ")[0];
 
                     // only process request if route changes
                     if (!route.equals(lastProcessedRoute)) {
@@ -74,9 +78,11 @@ public class ContentServer {
                         try {
                             requestURI = new URI(route);
                             queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
-
+                            System.out.println(request);
                             String filePath = queryParameters.get("filePath");
-                            uploadWeatherDataToAggregateServer(aggregate_server_url, filePath);
+                            if (request == "PUT" || request == "POST") {
+                                uploadWeatherDataToAggregateServer(aggregate_server_url, filePath);
+                            }
 
                         } catch (URISyntaxException e) {
                             System.err.println("Invalid URI syntax: " + e.getMessage());
@@ -93,6 +99,7 @@ public class ContentServer {
     }
 
     private void uploadWeatherDataToAggregateServer(String aggregateServerUrl, String fileLocation) {
+        lamportClock.tick();
         WeatherData weatherData = WeatherData.readFileAndParse(fileLocation);
         if (weatherData == null) {
             return;
@@ -104,6 +111,7 @@ public class ContentServer {
 
     public static void PUTRequest(String json, String aggregateServerUrl) {
         try {
+            lamportClock.tick();
             URL url = new URL(aggregateServerUrl);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("PUT");
@@ -134,14 +142,7 @@ public class ContentServer {
             aggregate_server_url = args[2];
         }
         ContentServer server = new ContentServer(port, fileLocation);
+        // start server and upload data form fileLocation
         server.start();
-
-        // For demonstration purposes: stop the server after 60 seconds
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            // Handle interruption
-        }
-        server.stop();
     }
 }

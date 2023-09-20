@@ -11,7 +11,11 @@ test-all:
 	mvn test
 
 run-integration-tests: 
-	mvn test -Dtest=ContentServerIntegrationTest,GETClientIntegrationTest
+	mvn test -Dtest=GETClientIntegrationTests
+# mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests
+
+run-unit-tests:
+	mvn test -Dtest=AggregationServerUnitTests.java,UtilityUnitTests.java,WeatherDataUnitTests.java
 
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server

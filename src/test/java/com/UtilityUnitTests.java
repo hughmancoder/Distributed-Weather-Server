@@ -10,17 +10,17 @@ import com.models.WeatherData;
 import com.utility.JsonUtils;
 import com.utility.LamportClock;
 
-public class UtilityTests extends TestCase {
+public class UtilityUnitTests extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("UtilityTests");
-        suite.addTest(new UtilityTests("testLamportClock"));
-        suite.addTest(new UtilityTests("testToJsonAndFromJson"));
-        suite.addTest(new UtilityTests("testGetDataFromJsonFile"));
+        suite.addTest(new UtilityUnitTests("testLamportClock"));
+        suite.addTest(new UtilityUnitTests("testToJsonAndFromJson"));
+        suite.addTest(new UtilityUnitTests("testGetDataFromJsonFile"));
         return suite;
     }
 
-    public UtilityTests(String testName) {
+    public UtilityUnitTests(String testName) {
         super(testName);
     }
 
