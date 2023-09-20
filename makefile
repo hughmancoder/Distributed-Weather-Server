@@ -10,11 +10,14 @@ test-all:
 	@echo "Running Tests..."
 	mvn test
 
+run-unit-tests:
+	mvn test -Dtest=AggregationServerUnitTests.java,UtilityUnitTests.java,WeatherDataUnitTests.java
+
 run-integration-tests: 
 	mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests
 
-run-unit-tests:
-	mvn test -Dtest=AggregationServerUnitTests.java,UtilityUnitTests.java,WeatherDataUnitTests.java
+run-syncronisation-tests: 
+	mvn test -Dtest=SynchronisationTests
 
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server

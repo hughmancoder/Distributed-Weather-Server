@@ -50,7 +50,7 @@
 #### Lamport Clocks
 
 - [x] Implementation in all components: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itsmake relf to synchronize with other systems.
-- [ ] **Tests**: Unit and Integration tests for synchronization
+- [x] **Tests**: Unit and Integration tests for synchronization
 
 #### Error Handling
 
@@ -70,59 +70,33 @@
 - [ ] Test persistance among server restarts and crashes
 - [ ] Optional: Implement bonus features like custom JSON parsing
 
-## Component Methods
-
-### GET Client
-
-- [ ] `getClient()`
-- [ ] `ReadInputFile()`
-- [x] `SendPUTRequest()`
-- [ ] `SynchroniseLamportClock()`
-- [ ] `ConfirmReceipt()`
-
-### Aggregation Server
-
-- [x] `startServer(int port)`
-- [x] `handleGetRequest(Client client): Response`
-- [x] `handlePutRequest(ContentServer contentServer)`
-- [ ] `removeStaleData()`
-- [ ] `SynchroniseLamportClock()`
-
-### Content Servers
-
-- [ ] `ReadData()`
-- [ ] `ConvertToJSON()`
-- [ ] `SendPUTRequest()`
-- [ ] `SynchroniseLamportClock()`
-- [ ] `ConfirmReceipt()`
-
 ## Code Quality Checklist (Appendix A)
 
 ### Do
 
 - [ ] Write comments above methods
 - [ ] Describe special cases
-- [ ] Maintain modular code
+- [x] Maintain modular code
 
 ### Don't
 
 - [ ] Use magic numbers
-- [ ] Use comments as structural elements
+- [x] Use comments as structural elements
 - [ ] Leave spelling errors or TODO blocks
 
 ## Functionality Checklist (Appendix B)
 
 ### Basic Functionality
 
-- [ ] Text sending and receiving
-- [ ] Startup and initial communication
-- [ ] PUT and GET operations
+- [x] Text sending and receiving
+- [x] Startup and initial communication
+- [x] PUT and GET operations
 - [ ] Data expiry within 30 seconds
 - [ ] Error retry mechanism
 
 ### Full Functionality
 
-- [ ] Lamport clock synchronization
+- [x] Lamport clock synchronization
 - [ ] Implement all error codes
 - [ ] Server replication for fault-tolerance
 

@@ -28,6 +28,7 @@ import com.utility.JsonUtils;
 
 public class AggregationServer {
     public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
+    private static int THIRTY_SECONDS = 300000;
 
     private static HttpServer server;
     private static Timer timer;
@@ -66,9 +67,10 @@ public class AggregationServer {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    System.out.println("Removing old entries...");
                     removeOldEntries();
                 }
-            }, 30000, 30000);
+            }, THIRTY_SECONDS, THIRTY_SECONDS);
 
             isRunning = true;
 
@@ -165,6 +167,9 @@ public class AggregationServer {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             String requestMethod = httpExchange.getRequestMethod();
+            // TODO: remove
+            // httpExchange.getResponseHeaders().add("X-Lamport-Clock",
+            // String.valueOf(lamportClock.getTime()));
 
             if ("GET".equals(requestMethod)) {
                 GETRequest(httpExchange);
@@ -180,15 +185,14 @@ public class AggregationServer {
             lock.lock();
             try {
                 lamportClock.tick();
+
                 URI requestURI = httpExchange.getRequestURI();
                 Map<String, String> queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
-
                 String stationId = queryParameters.get("station");
                 String json;
 
                 if (stationId != null) {
                     // Send data for the specific station
-
                     WeatherData weatherData = weatherDataMap.get(stationId);
                     if (weatherData != null) {
                         json = JsonUtils.toJson(weatherData);
@@ -235,9 +239,8 @@ public class AggregationServer {
                 }
                 // Call the static PUTRequest to update data and get the status code
                 long currentTime = System.currentTimeMillis();
+                weatherData.setLamportTime(lamportClock.getTime());
                 int statusCode = AggregationServer.PUTRequest(weatherData, currentTime);
-
-                // Send the response headers
                 httpExchange.sendResponseHeaders(statusCode, 0);
 
             } catch (JsonParseException e) {
@@ -253,33 +256,6 @@ public class AggregationServer {
         }
     }
 
-    // public static int PUTRequest(WeatherData data,) {
-    // int statusCode;
-    // if (weatherDataMap.isEmpty()) {
-    // statusCode = 201; // Created
-    // } else {
-    // statusCode = 200; // OK
-    // }
-
-    // lock.lock();
-    // try {
-    // lamportClock.tick();
-    // data.setLamportTime(lamportClock.getTime()); // Stamp the data with Lamport
-    // time
-    // weatherDataMap.put(data.getId(), data);
-
-    // weatherDataQueue.add(new TimedEntry(data.getId(),
-    // System.currentTimeMillis()));
-    // weatherDataMap.put(data.getId(), data);
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // statusCode = 500; // Internal Server Error
-    // } finally {
-    // lock.unlock();
-    // }
-
-    // return statusCode;
-    // }
     public static int PUTRequest(WeatherData data, long incomingTime) {
         int statusCode;
         lock.lock();
@@ -291,7 +267,7 @@ public class AggregationServer {
             lastUpdateTime.set(lamportClock.getTime());
 
             weatherDataMap.put(data.getId(), data);
-            weatherDataQueue.add(new TimedEntry(data.getId(), lamportClock.getTime()));
+            weatherDataQueue.add(new TimedEntry(data.getId(), incomingTime));
             statusCode = (weatherDataMap.size() == 1) ? 201 : 200;
         } catch (Exception e) {
             e.printStackTrace();
@@ -302,19 +278,33 @@ public class AggregationServer {
         return statusCode;
     }
 
+    public static long getLamportTime() {
+        return lamportClock.getTime();
+    }
+
     private static void removeOldEntries() {
         lock.lock();
         try {
-            long currentTime = System.currentTimeMillis();
-            long thresholdTime = currentTime - 30 * 1000;
+            long thresholdTime = System.currentTimeMillis() - THIRTY_SECONDS;
+            // TODO
+            System.out.println("Removing entries older than " + thresholdTime);
 
-            weatherDataQueue.removeIf(entry -> entry.getTime() < thresholdTime);
+            // Remove old entries from PriorityBlockingQueue
+            while (true) {
+                TimedEntry entry = weatherDataQueue.peek();
+                if (entry == null || entry.getTime() >= thresholdTime) {
+                    break;
+                }
+                weatherDataQueue.poll();
+            }
 
+            // Create a set of IDs currently in the queue
             Set<String> keysInQueue = new HashSet<>();
             for (TimedEntry entry : weatherDataQueue) {
                 keysInQueue.add(entry.getId());
             }
 
+            // Remove HashMap entries not present in the queue
             Iterator<Map.Entry<String, WeatherData>> iterator = weatherDataMap.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, WeatherData> entry = iterator.next();
@@ -323,7 +313,7 @@ public class AggregationServer {
                 }
             }
         } finally {
-            lock.unlock(); // Make sure to unlock in the finally block
+            lock.unlock();
         }
     }
 

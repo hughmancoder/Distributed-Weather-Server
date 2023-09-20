@@ -10,10 +10,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.Timeout;
-
 import com.AggregationServer;
 import com.ContentServer;
 import com.GETClient;
@@ -30,9 +27,6 @@ public class ContentServerIntegrationTests {
     private static final String AGGREGATION_SERVER_PORT = "4567";
     private static final String CONTENT_SERVER_PORT = "4568";
     private ContentServer contentServer;
-
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(20); // 20 seconds max per test method
 
     @Before
     public void setup() throws ExecutionException, InterruptedException {

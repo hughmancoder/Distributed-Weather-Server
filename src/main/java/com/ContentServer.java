@@ -35,7 +35,7 @@ public class ContentServer {
             System.out.println("ContentServer running on port " + port + "...");
             listenForClients();
         } catch (IOException e) {
-            System.err.println("Server error: " + e.getMessage());
+            System.err.println("Content Server error: " + e.getMessage());
         }
     }
 
@@ -71,6 +71,15 @@ public class ContentServer {
                     route = receivedData.split(" ")[1];
                     request = receivedData.split(" ")[0];
 
+                    if (request.equalsIgnoreCase("GET") && route.equalsIgnoreCase("/lamport")) {
+                        long lamportTime = lamportClock.getTime();
+                        writer.println("HTTP/1.1 200 OK");
+                        writer.println("Content-Type: text/plain");
+                        writer.println("Content-Length: " + String.valueOf(lamportTime).length());
+                        writer.println();
+                        writer.println(lamportTime);
+                        continue;
+                    }
                     // only process request if route changes
                     if (!route.equals(lastProcessedRoute)) {
                         lastProcessedRoute = route;
@@ -78,11 +87,11 @@ public class ContentServer {
                         try {
                             requestURI = new URI(route);
                             queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
-                            System.out.println(request);
                             String filePath = queryParameters.get("filePath");
                             if (request == "PUT" || request == "POST") {
-                                uploadWeatherDataToAggregateServer(aggregate_server_url, filePath);
+                                System.out.println("POST/PUT request sent to aggregate server");
                             }
+                            uploadWeatherDataToAggregateServer(aggregate_server_url, filePath);
 
                         } catch (URISyntaxException e) {
                             System.err.println("Invalid URI syntax: " + e.getMessage());
@@ -105,26 +114,33 @@ public class ContentServer {
             return;
         }
 
+        lamportClock.update(System.currentTimeMillis());
+        weatherData.setLamportTime(lamportClock.getTime());
+
         String json = JsonUtils.toJson(weatherData);
         PUTRequest(json, aggregateServerUrl);
     }
 
     public static void PUTRequest(String json, String aggregateServerUrl) {
         try {
-            lamportClock.tick();
+
             URL url = new URL(aggregateServerUrl);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
             con.setRequestMethod("PUT");
             con.setRequestProperty("Content-Type", "application/json; utf-8");
             con.setDoOutput(true);
 
+            // Send payload
             try (DataOutputStream writer = new DataOutputStream(con.getOutputStream())) {
                 writer.writeBytes(json);
                 writer.flush();
             }
 
+            // Get the response
             int responseCode = con.getResponseCode();
             System.out.println("Sent PUT request to aggregate server. Response Code: " + responseCode);
+
         } catch (IOException e) {
             System.err.println("Failed to upload data to aggregate server: " + e.getMessage());
         }
@@ -142,7 +158,10 @@ public class ContentServer {
             aggregate_server_url = args[2];
         }
         ContentServer server = new ContentServer(port, fileLocation);
-        // start server and upload data form fileLocation
-        server.start();
+        server.start(); // start server and upload data form fileLocation
+    }
+
+    public static long getLamportTime() {
+        return lamportClock.getTime();
     }
 }

@@ -8,7 +8,6 @@ import junit.framework.TestSuite;
 
 import com.models.WeatherData;
 import com.utility.JsonUtils;
-import com.utility.LamportClock;
 
 public class UtilityUnitTests extends TestCase {
 
@@ -22,13 +21,6 @@ public class UtilityUnitTests extends TestCase {
 
     public UtilityUnitTests(String testName) {
         super(testName);
-    }
-
-    public void testLamportClock() {
-        LamportClock lc = new LamportClock();
-        lc.tick();
-        lc.update(5);
-        assertEquals(6, lc.getTime());
     }
 
     public void testToJsonAndFromJson() {
