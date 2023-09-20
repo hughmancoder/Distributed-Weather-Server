@@ -11,8 +11,7 @@ test-all:
 	mvn test
 
 run-integration-tests: 
-	mvn test -Dtest=GETClientIntegrationTests
-# mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests
+	mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests
 
 run-unit-tests:
 	mvn test -Dtest=AggregationServerUnitTests.java,UtilityUnitTests.java,WeatherDataUnitTests.java

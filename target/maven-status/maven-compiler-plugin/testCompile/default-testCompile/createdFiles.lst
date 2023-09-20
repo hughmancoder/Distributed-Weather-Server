@@ -1,5 +1,2 @@
-com/AggregationServerUnitTests.class
 com/integration/GETClientIntegrationTests.class
 com/integration/ContentServerIntegrationTests.class
-com/UtilityUnitTests.class
-com/WeatherDataUnitTests.class

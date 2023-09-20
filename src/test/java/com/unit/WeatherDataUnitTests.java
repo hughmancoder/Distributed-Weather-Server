@@ -1,4 +1,4 @@
-package com;
+package com.unit;
 
 import com.models.WeatherData;
 import junit.framework.TestCase;
