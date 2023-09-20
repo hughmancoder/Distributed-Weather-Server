@@ -9,8 +9,10 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.URL;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -315,6 +317,25 @@ public class AggregationServer {
         } finally {
             lock.unlock();
         }
+    }
+
+    public static long getRemoteLamportTime(String serverUrl) {
+        long lamportTime = -1;
+        try {
+            URL url = new URL(serverUrl + "/lamport");
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+
+            if (con.getResponseCode() == 200) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                    String response = reader.readLine();
+                    lamportTime = Long.parseLong(response);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to get Lamport time from remote server: " + e.getMessage());
+        }
+        return lamportTime;
     }
 
 }

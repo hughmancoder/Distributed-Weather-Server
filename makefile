@@ -16,7 +16,7 @@ run-unit-tests:
 run-integration-tests: 
 	mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests
 
-run-syncronisation-tests: 
+run-synchronisation-tests: 
 	mvn test -Dtest=SynchronisationTests
 
 run-all-servers-linux:

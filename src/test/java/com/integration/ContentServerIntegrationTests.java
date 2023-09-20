@@ -17,7 +17,6 @@ import com.GETClient;
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
-import com.utility.LamportClock;
 
 public class ContentServerIntegrationTests {
     private static final String TEST_FILE_PATH_1 = "src/test/resources/test_weather_data_IDS60901.json";
@@ -52,14 +51,13 @@ public class ContentServerIntegrationTests {
 
     @Test
     public void testUploadWeatherDataToAggregateServer() {
-        LamportClock lamportClock = new LamportClock();
 
         try {
             Thread.sleep(2000); // Allow some time for the ContentServer to upload data to the AggregationServer
 
             // Make GET request to AggregationServer to retrieve PUT data
             String stationId = null;
-            String result = GETClient.GETRequest(SERVER_URL, AGGREGATION_SERVER_PORT, stationId, lamportClock);
+            String result = GETClient.GETRequest(SERVER_URL, AGGREGATION_SERVER_PORT, stationId);
             assertNotNull("Result should not be null", result);
             assertFalse("Result should not be empty", result.isEmpty());
 

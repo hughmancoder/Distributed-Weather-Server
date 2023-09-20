@@ -76,7 +76,6 @@ public class ContentServer {
                         writer.println("HTTP/1.1 200 OK");
                         writer.println("Content-Type: text/plain");
                         writer.println("Content-Length: " + String.valueOf(lamportTime).length());
-                        writer.println();
                         writer.println(lamportTime);
                         continue;
                     }

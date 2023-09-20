@@ -14,14 +14,12 @@ import com.GETClient;
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
 import com.utility.JsonUtils;
-import com.utility.LamportClock;
 
 public class GETClientIntegrationTests {
     private final String testFilePath1 = "src/test/resources/test_weather_data_IDS60901.json";
     private final String testFilePath2 = "src/test/resources/test_weather_data_IDS60902.json";
     private final String serverUrl = "http://localhost";
     private final String AGGREGATION_SERVER_PORT = "4567";
-    private final LamportClock lamportClock = new LamportClock();
 
     @Before
     public void setup() {
@@ -49,7 +47,7 @@ public class GETClientIntegrationTests {
 
     private void performGETRequest(String stationId, int expectedJsonSize) {
         try {
-            String result = GETClient.GETRequest(serverUrl, AGGREGATION_SERVER_PORT, stationId, lamportClock);
+            String result = GETClient.GETRequest(serverUrl, AGGREGATION_SERVER_PORT, stationId);
             assertNotNull("Result should not be null", result);
             assertFalse("Result should not be empty", result.isEmpty());
 
