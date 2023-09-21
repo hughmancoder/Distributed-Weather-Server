@@ -3,16 +3,13 @@ package com.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class HttpUtils {
     public static final String LAMPORT_CLOCK_HEADER = "X-Lamport-Clock";

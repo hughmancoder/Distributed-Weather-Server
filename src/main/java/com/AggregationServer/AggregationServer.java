@@ -2,15 +2,19 @@ package com.AggregationServer;
 
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import com.models.WeatherData;
 import com.utils.JsonUtils;
 import com.utils.LamportClock;
 import com.utils.ServerHandler;
+import com.utils.WeatherDataFileManager;
 import com.models.TimedEntry;
 
 public class AggregationServer {
-    public static final String TEMP_STORAGE_PATH = "../../resources/temp_storage.json";
+    public static final String DATA_STORAGE_PATH = "../../resources/temp_storage";
     private static final long THIRTY_SECONDS = 30 * 1000;
     private static final ReentrantLock lock = new ReentrantLock();
     private static LamportClock lamportClock = new LamportClock();
@@ -24,14 +28,19 @@ public class AggregationServer {
             try {
                 port = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                e.printStackTrace();
                 System.out.println("Invalid port number. Using default port 4567");
             }
         }
 
+        try {
+            recoverFromCrash(DATA_STORAGE_PATH);
+        } catch (IOException e) {
+            System.out.println("Failed to recover from crash");
+        }
         // start aggregation server
-        ServerHandler serverHandler = new ServerHandler(port, lock, lamportClock, weatherDataMap, true);
+        ServerHandler serverHandler = new ServerHandler(port, lock, lamportClock, weatherDataMap);
         serverHandler.start();
+
     }
 
     public static void removeOldEntries() {
@@ -62,7 +71,13 @@ public class AggregationServer {
                     iterator.remove();
                 }
             }
+            try {
+                WeatherDataFileManager.writeFile(DATA_STORAGE_PATH, weatherDataMap);
+            } catch (IOException e) {
+                System.out.println("Erorr writing to file" + e.getMessage());
+            }
         });
+
     }
 
     public static void clearWeatherDataMap() {
@@ -72,15 +87,14 @@ public class AggregationServer {
     private static void lockData(Runnable task) {
         lock.lock();
         try {
-            // lamportClock.tick();
             task.run();
         } finally {
             lock.unlock();
         }
     }
 
-    public static Map<String, WeatherData> getWeatherDataMap() {
-        return Collections.unmodifiableMap(weatherDataMap);
+    public static HashMap<String, WeatherData> getWeatherDataMap() {
+        return new HashMap<>(weatherDataMap); // Deep copy
     }
 
     public static String getAllWeatherData() {
@@ -116,6 +130,20 @@ public class AggregationServer {
             }
             weatherDataMap.put(id, weatherData);
         });
+    }
+
+    public static void recoverFromCrash(String filePath) throws IOException {
+        String tempFilePath = filePath + ".tmp";
+        if (Files.exists(Paths.get(tempFilePath))) {
+            HashMap<String, WeatherData> recoveredData = WeatherDataFileManager.fileToWeatherDataMap(tempFilePath);
+            // Merge with existing data ssuming weatherDataMap is your primary data store
+            weatherDataMap.putAll(recoveredData);
+            Files.delete(Paths.get(tempFilePath));
+        } else if (Files.exists(Paths.get(filePath))) {
+            HashMap<String, WeatherData> loadedData = WeatherDataFileManager.fileToWeatherDataMap(filePath);
+
+            weatherDataMap.putAll(loadedData);
+        }
     }
 
 }

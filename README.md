@@ -20,11 +20,11 @@ A distributed system to aggregate and serve weather data in a coordinated manner
 
 To get all weather on aggregate server
 
-http://localhost:4567/weather/
+<http://localhost:4567/weather/>
 
 To get weather by station on aggregate server
 
-http://localhost:4567/weather?station=STATION_ID
+<http://localhost:4567/weather?station=STATION_ID>
 
 ## Content server
 
@@ -32,9 +32,9 @@ http://localhost:4567/weather?station=STATION_ID
 
 For example if the content server is running at localhost:4568
 
-http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60901.txt
+<http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60901.txt>
 
-http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60902.txt
+<http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60902.txt>
 
 ## Running tests
 

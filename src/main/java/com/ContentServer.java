@@ -1,6 +1,5 @@
 package com;
 
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -61,7 +60,7 @@ public class ContentServer {
 
             // Check HTTP Response Code
             int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 201) {
                 lamportClock = HttpUtils.displayPostRequestResponse(conn, lamportClock);
             } else {
                 System.out.println("PUT request failed: " + responseCode);

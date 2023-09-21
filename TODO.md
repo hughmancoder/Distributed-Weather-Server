@@ -57,14 +57,14 @@
 
 #### Error Handling
 
-- [ ] HTTP status codes 400, 500, and 204 in Aggregation Server
-- [ ] Retry mechanisms in both GET and Content Servers
-- [ ] **Tests**: Unit tests for error codes and retry mechanisms
+- [x] HTTP status codes 400, 500, and 204 in Aggregation Server
+- [x] Retry mechanisms in both GET and Content Servers
+- [x] **Tests**: Unit tests for error codes and retry mechanisms
 
 #### Data Expiry
 
-- [ ] 30-second data expiry in Aggregation Server
-- [ ] **Tests**: Unit and Integration tests for data expiry
+- [x] 30-second data expiry in Aggregation Server
+- [x] **Tests**: Unit and Integration tests for data expiry
 
 ### Phase 4: Optimisation & Cleanup
 
@@ -83,9 +83,9 @@
 
 ### Don't
 
-- [ ] Use magic numbers
+- [x] Use magic numbers
 - [x] Use comments as structural elements
-- [ ] Leave spelling errors or TODO blocks
+- [x] Leave spelling errors or TODO blocks
 
 ## Functionality Checklist (Appendix B)
 
@@ -94,14 +94,14 @@
 - [x] Text sending and receiving
 - [x] Startup and initial communication
 - [x] PUT and GET operations
-- [ ] Data expiry within 30 seconds
-- [ ] Error retry mechanism
+- [x] Data expiry within 30 seconds
+- [x] Error retry mechanism
 
 ### Full Functionality
 
 - [x] Lamport clock synchronization
-- [ ] Implement all error codes
-- [ ] Server replication for fault-tolerance
+- [x] Implement all error codes
+- [x] Server replication for fault-tolerance
 
 ### Bonus Functionality
 
@@ -109,12 +109,12 @@
 
 ## Testing
 
-- [ ] Unit tests for individual components and methods
-- [ ] More rigorous testing, try invalid files and different data
-- [ ] Integration tests for interactions and parallel requests
-- [ ] Tests for server crash and recovery, network failure, and incorrect JSON
+- [x] Unit tests for individual components and methods
+- [x] More rigorous testing, try invalid files and different data
+- [x] Integration tests for interactions and parallel requests
+- [x] Tests for server crash and recovery, network failure, and incorrect JSON
 
 ## Other
 
-- [ ] API documentation
-- [ ] JSON Parser in JsonUtils
+- [x] API documentation
+- [x] JSON Parser in JsonUtils

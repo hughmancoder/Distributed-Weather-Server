@@ -39,7 +39,7 @@ public class WeatherDataFileManagerTests extends TestCase {
         initialData.put("key1", weatherData);
 
         // Write to file
-        WeatherDataFileManager.weatherDataMapToFile(OUTPUT_PATH, initialData);
+        WeatherDataFileManager.writeFile(OUTPUT_PATH, initialData);
 
         // Read back
         HashMap<String, WeatherData> readData = WeatherDataFileManager.fileToWeatherDataMap(OUTPUT_PATH);
@@ -58,17 +58,17 @@ public class WeatherDataFileManagerTests extends TestCase {
     public void testConcurrentWrite() throws InterruptedException {
         Thread t1 = new Thread(() -> {
             try {
-                WeatherDataFileManager.weatherDataMapToFile(OUTPUT_PATH, new HashMap<>());
+                WeatherDataFileManager.writeFile(OUTPUT_PATH, new HashMap<>());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         });
 
         Thread t2 = new Thread(() -> {
             try {
-                WeatherDataFileManager.weatherDataMapToFile(OUTPUT_PATH, new HashMap<>());
+                WeatherDataFileManager.writeFile(OUTPUT_PATH, new HashMap<>());
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
         });
 
@@ -79,14 +79,13 @@ public class WeatherDataFileManagerTests extends TestCase {
         t2.join();
 
         try {
-            WeatherDataFileManager.weatherDataMapToFile(OUTPUT_PATH, new HashMap<>());
+            WeatherDataFileManager.writeFile(OUTPUT_PATH, new HashMap<>());
             HashMap<String, WeatherData> readData = WeatherDataFileManager.fileToWeatherDataMap(OUTPUT_PATH);
 
             // as both threads are writing to an empty HashMap, we expect an empty HashMap
-            // file should be empty.
             assertEquals("Data should be an empty HashMap", new HashMap<>(), readData);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }
@@ -97,8 +96,8 @@ public class WeatherDataFileManagerTests extends TestCase {
             fail("Should have thrown IOException");
         } catch (IOException e) {
 
-            assertEquals("An error occurred in reading file", e.getMessage()); // Add this if you are going with the
-                                                                               // second strategy
+            assertEquals("An error occurred while reading the file", e.getMessage()); // Add
+
         }
     }
 
@@ -109,7 +108,7 @@ public class WeatherDataFileManagerTests extends TestCase {
         try {
             HashMap<String, WeatherData> readData = WeatherDataFileManager
                     .fileToWeatherDataMap(emptyFilePath.toString());
-            assertEquals("Data should be an empty HashMap for an empty file", null, readData);
+            assertEquals("Data should be an empty HashMap for an empty file", 0, readData.size());
         } finally {
             Files.deleteIfExists(emptyFilePath);
         }

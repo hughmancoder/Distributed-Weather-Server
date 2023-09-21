@@ -39,7 +39,7 @@ public class serverIntegrationTests {
 
         Thread aggregationServerThread = new Thread(() -> {
             aggregationServerHandler = new ServerHandler(Integer.parseInt(AGGREGATION_SERVER_PORT), lock, lamportClock,
-                    weatherDataMap, true);
+                    weatherDataMap);
             aggregationServerHandler.start();
         });
 
@@ -115,37 +115,5 @@ public class serverIntegrationTests {
         } catch (Exception e) {
             fail("An exception should not have been thrown: " + e.getMessage());
         }
-
     }
 }
-
-// @Before
-// public void setup() throws ExecutionException, InterruptedException {
-// lamportClock = new LamportClock();
-// ReentrantLock lock = new ReentrantLock();
-// HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
-
-// Thread aggregationServerThread = new Thread(() -> {
-// aggregationServerHandler = new
-// ServerHandler(Integer.parseInt(AGGREGATION_SERVER_PORT), lock, lamportClock,
-// weatherDataMap, true);
-// aggregationServerHandler.start();
-// });
-
-// aggregationServerThread.start();
-// Thread.sleep(1000);
-
-// String[] contentServerArgs = new String[] { AGGREGATION_SERVER_URL, TEXT_FILE
-// };
-// ContentServer.main(contentServerArgs);
-// }
-
-// @After
-// public void teardown() {
-// try {
-// Thread.sleep(5000);
-// } catch (InterruptedException e) {
-// System.err.println("Failed to sleep thread");
-// }
-// aggregationServerHandler.stop();
-// }

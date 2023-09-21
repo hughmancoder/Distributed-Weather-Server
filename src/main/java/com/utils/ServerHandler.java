@@ -19,19 +19,17 @@ public class ServerHandler {
     private ExecutorService threadPool;
     private final LamportClock lamportClock;
     private Timer timer;
-    private final long timerInterval;
     private TimerTask timerTask;
     private volatile boolean isRunning;
-    private boolean isAggregator;
     private ServerSocket serverSocket;
+    private static long timerInterval = 30 * 1000; // Thirty seconds
 
     public ServerHandler(int port, ReentrantLock lock, LamportClock lamportClock,
-            HashMap<String, WeatherData> weatherDataMap, boolean isAggregator) {
+            HashMap<String, WeatherData> weatherDataMap) {
         this.port = port;
         this.lamportClock = lamportClock;
-        this.isAggregator = isAggregator;
         this.threadPool = Executors.newFixedThreadPool(10);
-        this.timerInterval = 30 * 1000; // Thirty seconds
+
         this.timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -43,12 +41,12 @@ public class ServerHandler {
 
     public void start() {
         isRunning = true;
-        if (isAggregator) {
-            System.out.println("Running aggregation server on port " + port + "..");
-            timer = new Timer();
-            timer.schedule(timerTask, timerInterval, timerInterval);
-        }
+
+        System.out.println("Running aggregation server on port " + port + "..");
+        timer = new Timer();
+        timer.schedule(timerTask, timerInterval, timerInterval);
         startServer();
+        startDataCleanupTask();
     }
 
     private void startServer() {
@@ -79,5 +77,20 @@ public class ServerHandler {
         } catch (IOException e) {
             System.err.println("Error stopping server: " + e.getMessage());
         }
+    }
+
+    public static void startDataCleanupTask() {
+        System.out.println("Starting data cleanup task...");
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(timerInterval);
+                    AggregationServer.removeOldEntries();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }).start();
     }
 }

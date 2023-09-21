@@ -3,16 +3,20 @@ package com.AggregationServer;
 import java.io.*;
 import java.net.Socket;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.models.WeatherData;
 import com.utils.JsonUtils;
 import com.utils.LamportClock;
+import com.utils.WeatherDataFileManager;
 import com.utils.HttpUtils;
 
 public class HttpClient {
     private Socket clientSocket;
     private LamportClock lamportClock;
+    private boolean firstUpload = true;
+    private String DATA_STORAGE_PATH = "../../resources/temp_storage";
 
     public HttpClient(Socket clientSocket, LamportClock lamportClock) {
         this.clientSocket = clientSocket;
@@ -81,19 +85,40 @@ public class HttpClient {
 
     private void AggregationPUTRequest(PrintWriter out, String jsonPayload) {
         lamportClock.tick();
-        if (jsonPayload == null) {
-            out.println("HTTP/1.1 400 Bad Request - jsonPayload is null");
+
+        if (jsonPayload == null || jsonPayload.isEmpty()) {
+            out.println("HTTP/1.1 204 No Content");
             return;
         }
 
-        WeatherData wd = JsonUtils.fromJson(jsonPayload);
+        WeatherData wd;
+        try {
+            wd = JsonUtils.fromJson(jsonPayload);
+        } catch (Exception e) {
+            out.println("HTTP/1.1 500 Internal Server Error");
+            return;
+        }
 
         if (wd == null) {
             out.println("HTTP/1.1 400 Bad Request");
             return;
         }
+
         AggregationServer.putToWeatherDataMap(wd);
-        out.println("HTTP/1.1 200 OK");
+        HashMap<String, WeatherData> weatherDataMap = AggregationServer.getWeatherDataMap();
+        try {
+            WeatherDataFileManager.writeFile(DATA_STORAGE_PATH, weatherDataMap);
+        } catch (IOException e) {
+            System.out.println("Erorr writing to file" + e.getMessage());
+        }
+
+        if (firstUpload) {
+            out.println("HTTP/1.1 201 Created");
+            firstUpload = false;
+        } else {
+            out.println("HTTP/1.1 200 OK");
+        }
+
         out.println("X-Lamport-Clock: " + lamportClock.getTime());
         out.println();
     }

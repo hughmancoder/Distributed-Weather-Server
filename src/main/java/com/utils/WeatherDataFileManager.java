@@ -13,8 +13,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.google.gson.JsonSyntaxException;
 import com.models.WeatherData;
 
 public class WeatherDataFileManager {
@@ -30,32 +28,6 @@ public class WeatherDataFileManager {
         }
     }
 
-    public static void weatherDataMapToFile(String filePath, HashMap<String, WeatherData> weatherDataMap)
-            throws IOException {
-        lockData(() -> {
-            try {
-                Path path = Paths.get(filePath);
-                Path parentDir = path.getParent();
-                if (parentDir != null) {
-                    Files.createDirectories(parentDir);
-                }
-                String json = JsonUtils.toJson(weatherDataMap); // Replace with your util
-                ByteBuffer buffer = ByteBuffer.allocate(json.getBytes(StandardCharsets.UTF_8).length);
-                buffer.put(json.getBytes(StandardCharsets.UTF_8));
-                buffer.flip();
-                try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.CREATE,
-                        StandardOpenOption.WRITE)) {
-                    fileChannel.truncate(0);
-                    while (buffer.hasRemaining()) {
-                        fileChannel.write(buffer);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
     public static HashMap<String, WeatherData> fileToWeatherDataMap(String filePath) throws IOException {
         final HashMap<String, WeatherData>[] weatherDataMap = new HashMap[] { new HashMap<>() };
         try {
@@ -68,7 +40,10 @@ public class WeatherDataFileManager {
                             fileChannel.read(buffer);
                             buffer.flip();
                             String json = StandardCharsets.UTF_8.decode(buffer).toString();
-                            weatherDataMap[0] = JsonUtils.jsonToWeatherDataMap(json);
+                            HashMap<String, WeatherData> deserializedMap = JsonUtils.jsonToWeatherDataMap(json);
+                            if (deserializedMap != null) {
+                                weatherDataMap[0] = deserializedMap;
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -79,9 +54,33 @@ public class WeatherDataFileManager {
             if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
             }
-            throw new IOException("An error occurred in reading file", e);
+            throw new IOException("An error occurred while reading the file", e);
         }
         return weatherDataMap[0];
+    }
+
+    public static void writeFile(String filePath, HashMap<String, WeatherData> weatherDataMap) throws IOException {
+        try {
+            Path path = Paths.get(filePath);
+            Path parentDir = path.getParent();
+            if (parentDir != null) {
+                Files.createDirectories(parentDir);
+            }
+            String json = JsonUtils.toJson(weatherDataMap);
+            ByteBuffer buffer = ByteBuffer.allocate(json.getBytes(StandardCharsets.UTF_8).length);
+            buffer.put(json.getBytes(StandardCharsets.UTF_8));
+            buffer.flip();
+            try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.CREATE,
+                    StandardOpenOption.WRITE)) {
+                fileChannel.truncate(0);
+                while (buffer.hasRemaining()) {
+                    fileChannel.write(buffer);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Failed to write to file", e);
+        }
     }
 
     public static WeatherData readFileAndParse(String fileLocation) {

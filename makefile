@@ -16,8 +16,10 @@ run-unit-tests:
 run-integration-tests: 
 	mvn test -Dtest=serverIntegrationTests
 
-run-synchronisation-tests: 
-	mvn test -Dtest=SynchronisationTests
+run-other-tests: 
+	mvn test -Dtest=TestDataExpiry
+
+	#  StatusCodeTests,
 
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
@@ -28,7 +30,7 @@ run-all-servers-mac:
 	osascript -e 'tell app "Terminal" to do script "cd $(CURRENT_DIR) && make run-content-server"'
 
 run-aggregation-server:
-	mvn exec:java -Dexec.mainClass="com.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
+	mvn exec:java -Dexec.mainClass="com.AggregationServer.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
 
 run-content-server:
 	mvn exec:java -Dexec.mainClass="com.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
