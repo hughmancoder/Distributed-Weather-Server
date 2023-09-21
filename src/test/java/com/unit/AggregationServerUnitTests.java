@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.models.WeatherData;
-import com.utility.JsonUtils;
+import com.utils.JsonUtils;
 
 public class AggregationServerUnitTests extends TestCase {
 

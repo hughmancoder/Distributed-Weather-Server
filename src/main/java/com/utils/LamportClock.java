@@ -1,13 +1,17 @@
-package com.utility;
+package com.utils;
 
 public class LamportClock {
     private long time;
 
-    public synchronized void tick() {
-        time++;
+    public LamportClock() {
+        this.time = 0;
     }
 
-    public synchronized void update(long otherTime) {
+    public synchronized void tick() {
+        ++time;
+    }
+
+    public synchronized void sync(long otherTime) {
         time = Math.max(time, otherTime) + 1;
     }
 

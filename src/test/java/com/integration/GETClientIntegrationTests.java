@@ -13,7 +13,7 @@ import com.AggregationServer;
 import com.GETClient;
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
-import com.utility.JsonUtils;
+import com.utils.JsonUtils;
 
 public class GETClientIntegrationTests {
     private final String testFilePath1 = "src/test/resources/test_weather_data_IDS60901.json";

@@ -264,42 +264,4 @@ public class WeatherData {
         System.out.println("WindSpeedKt: " + windSpeedKt);
     }
 
-    // TODO: unit test
-    public static WeatherData readFileAndParse(String fileLocation) {
-        HashMap<String, String> map = new HashMap<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileLocation))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":");
-                if (parts.length >= 2) {
-                    String key = parts[0].trim();
-                    String value = parts[1].trim();
-                    map.put(key, value);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("File located at " + fileLocation + "reading error " + e.getMessage());
-            return null;
-        }
-
-        // Construct WeatherData object based on the map
-        return new WeatherData(
-                map.get("id"),
-                map.get("name"),
-                map.get("state"),
-                map.get("time_zone"),
-                Double.parseDouble(map.get("lat")),
-                Double.parseDouble(map.get("lon")),
-                map.get("local_date_time"),
-                map.get("local_date_time_full"),
-                Double.parseDouble(map.get("air_temp")),
-                Double.parseDouble(map.get("apparent_t")),
-                map.get("cloud"),
-                Double.parseDouble(map.get("dewpt")),
-                Double.parseDouble(map.get("press")),
-                Integer.parseInt(map.get("rel_hum")),
-                map.get("wind_dir"),
-                Integer.parseInt(map.get("wind_spd_kmh")),
-                Integer.parseInt(map.get("wind_spd_kt")));
-    }
 }

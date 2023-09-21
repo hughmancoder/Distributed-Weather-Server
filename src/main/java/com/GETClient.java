@@ -1,80 +1,59 @@
-package com;
+// package com;
 
-import com.google.gson.JsonObject;
-import com.models.WeatherData;
-import com.utility.JsonUtils;
-import com.utility.LamportClock;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URLEncoder;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+// import java.io.BufferedReader;
+// import java.io.InputStreamReader;
+// import java.net.HttpURLConnection;
+// import java.net.URL;
+// import com.utils.LamportClock;
+// import com.google.gson.JsonObject;
+// import com.google.gson.JsonParser;
 
-public class GETClient {
-    public static final String AGGREGATION_SERVER_PORT = "4567";
-    public static final String DEFAULT_SERVER_URL = "http://localhost";
-    public static final String WEATHER_ENDPOINT = "/weather?station=";
-    private static LamportClock lamportClock = new LamportClock();
+// public class GETClient {
 
-    public static String buildUrl(String serverUrl, String port, String stationId) throws UnsupportedEncodingException {
-        String query = (stationId != null && !stationId.isEmpty())
-                ? WEATHER_ENDPOINT + URLEncoder.encode(stationId, StandardCharsets.UTF_8.toString())
-                : "/weather";
-        return serverUrl + ":" + port + query;
-    }
+// private static LamportClock lamportClock = new LamportClock();
 
-    public static String GETRequest(String serverUrl, String port, String stationId)
-            throws Exception {
-        serverUrl = Optional.ofNullable(serverUrl).orElse(DEFAULT_SERVER_URL);
-        port = Optional.ofNullable(port).orElse(AGGREGATION_SERVER_PORT);
+// public static void main(String[] args) {
+// String serverUrl = args[0];
+// String optionalStationId = args.length > 1 ? args[1] : null;
 
-        String finalUrl = buildUrl(serverUrl, port, stationId);
-        StringBuilder response = new StringBuilder();
+// try {
+// lamportClock.tick();
+// String jsonResponse = sendGETRequest(serverUrl, optionalStationId);
+// JsonObject jsonObject =
+// JsonParser.parseString(jsonResponse).getAsJsonObject();
 
-        HttpURLConnection conn = (HttpURLConnection) new URL(finalUrl).openConnection();
-        conn.setRequestMethod("GET");
+// for (String key : jsonObject.keySet()) {
+// System.out.println(key + ": " + jsonObject.get(key).getAsString());
+// }
 
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-            String line;
-            while ((line = in.readLine()) != null) {
-                response.append(line);
-            }
-        }
+// } catch (Exception e) {
+// e.printStackTrace();
+// }
+// }
 
-        return response.toString();
-    }
+// private static String sendGETRequest(String serverUrl, String
+// optionalStationId) throws IOException {
+// String fullUrl = serverUrl + "/weather";
+// if (optionalStationId != null) {
+// fullUrl += "?station=" + optionalStationId;
+// }
 
-    public static void main(String[] args) {
-        String serverUrl = args[0];
-        String port = args[1];
-        String stationId = args.length > 2 ? args[2] : null;
+// URL url = new URL(fullUrl);
+// HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+// conn.setRequestMethod("GET");
+// conn.setRequestProperty("X-Lamport-Clock",
+// Integer.toString(lamportClock.getTime()));
 
-        System.out.println("Running client with stationId " + stationId);
+// BufferedReader in = new BufferedReader(new
+// InputStreamReader(conn.getInputStream()));
+// String inputLine;
+// StringBuilder response = new StringBuilder();
 
-        try {
-            String jsonResponse = GETRequest(serverUrl, port, stationId);
+// while ((inputLine = in.readLine()) != null) {
+// response.append(inputLine);
+// }
+// in.close();
 
-            if (stationId != null) {
-                WeatherData wd = JsonUtils.fromJson(jsonResponse);
-                wd.showWeatherData();
-            } else {
-                JsonObject jsonObject = JsonUtils.parseStringToJson(jsonResponse);
-
-                for (String key : jsonObject.keySet()) {
-                    WeatherData wd = JsonUtils.fromJson(jsonObject.get(key).toString());
-                    wd.showWeatherData();
-                    System.out.println('\n');
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
-    }
-
-    public static long getLamportTime() {
-        return lamportClock.getTime();
-    }
-}
+// return response.toString();
+// }
+// }

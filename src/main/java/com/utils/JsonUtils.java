@@ -1,4 +1,4 @@
-package com.utility;
+package com.utils;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -20,12 +20,7 @@ public class JsonUtils {
     private static final Gson gson = new Gson();
 
     // TODO: test
-    public static String hashMapToJson(HashMap<String, WeatherData> map) {
-        return gson.toJson(map);
-    }
-
-    // TODO: test
-    public static HashMap<String, WeatherData> jsonToHashMap(String json) {
+    public static HashMap<String, WeatherData> jsonToWeatherDataMap(String json) {
         Type type = new TypeToken<HashMap<String, WeatherData>>() {
         }.getType();
         return gson.fromJson(json, type);
@@ -38,6 +33,10 @@ public class JsonUtils {
 
     public static String toJson(WeatherData weatherData) {
         return gson.toJson(weatherData);
+    }
+
+    public static String toJson(HashMap<String, WeatherData> map) {
+        return gson.toJson(map);
     }
 
     public static WeatherData fromJson(String json) {

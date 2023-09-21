@@ -1,4 +1,4 @@
-CONTENT_SERVER_ARGS = 4568 src/main/resources/weather_data.txt
+CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 AGGREGATION_SERVER_ARGS = 4567
 CLIENT_ARGS = http://localhost 4567 
 CURRENT_DIR := $(shell pwd)

@@ -22,7 +22,9 @@ To get all weather on aggregate server
 
 http://localhost:4567/weather/
 
-To get weather by Id on aggregate server
+To get weather by station on aggregate server
+
+http://localhost:4567/weather?station=STATION_ID
 
 ## Content server
 

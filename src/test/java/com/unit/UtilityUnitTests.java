@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import com.models.WeatherData;
-import com.utility.JsonUtils;
+import com.utils.JsonUtils;
 
 public class UtilityUnitTests extends TestCase {
 

@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
-import com.utility.JsonUtils;
-import com.utility.LamportClock;
+import com.utils.JsonUtils;
+import com.utils.LamportClock;
 
 import org.junit.Before;
 import org.junit.After;

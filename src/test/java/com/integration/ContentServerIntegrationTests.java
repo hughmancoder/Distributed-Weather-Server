@@ -16,7 +16,7 @@ import com.ContentServer;
 import com.GETClient;
 import com.google.gson.JsonObject;
 import com.models.WeatherData;
-import com.utility.JsonUtils;
+import com.utils.JsonUtils;
 
 public class ContentServerIntegrationTests {
     private static final String TEST_FILE_PATH_1 = "src/test/resources/test_weather_data_IDS60901.json";

@@ -50,7 +50,9 @@
 #### Lamport Clocks
 
 - [x] Implementation in all components: Maintain a local Lamport clock. You may need to include it in the HTTP headers or in the JSON payload itsmake relf to synchronize with other systems.
-- [x] add remote lamport method for getClient
+- [x] An event occurs locally (like processing a request). You tick the Lamport clock to move it forward.
+      Before sending a message/request to another entity, you tick the Lamport clock and include the new value in the outgoing message.
+      After receiving a message/request from another entity, you synchronize your local Lamport clock with the received Lamport clock value to keep them in sync.
 - [x] **Tests**: Unit and Integration tests for synchronization
 
 #### Error Handling

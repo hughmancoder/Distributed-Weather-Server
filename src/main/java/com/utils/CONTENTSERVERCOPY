@@ -1,0 +1,114 @@
+package com;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Map;
+
+import com.utils.ServerHandler;
+import com.utils.WeatherDataFileManager;
+import com.models.WeatherData;
+import com.utils.JsonUtils;
+
+public class ContentServer {
+
+    private static final String AGGREGATE_SERVER_DEFAULT_URL = "http://localhost:4567/weather";
+    private static final String USAGE_STRING = "Usage: java ContentServer <port> <filePath>";
+    private static final String CONTENT_TYPE_TEXT = "Content-Type: text/plain";
+    private static final String HTTP_OK = "HTTP/1.1 200 OK";
+
+    private final ServerHandler serverHandler;
+    private final String aggregateServerUrl;
+
+    public ContentServer(int port, String fileLocation, String aggregateServerUrl) {
+        this.serverHandler = new ServerHandler(port, fileLocation);
+        this.aggregateServerUrl = aggregateServerUrl;
+    }
+
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println(USAGE_STRING);
+            return;
+        }
+
+        int port = Integer.parseInt(args[0]);
+        String fileLocation = args[1];
+        String aggregateServerUrl = args.length >= 3 ? args[2] : AGGREGATE_SERVER_DEFAULT_URL;
+
+        ContentServer contentServer = new ContentServer(port, fileLocation, aggregateServerUrl);
+        contentServer.start();
+    }
+
+    public void start() {
+        serverHandler.start();
+    }
+
+    public void stop() {
+        serverHandler.stop();
+    }
+
+    private void handleClientRequest(Socket socket) throws IOException, URISyntaxException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+
+            String receivedData = reader.readLine();
+            System.out.println("Received from client: " + receivedData);
+
+            if (receivedData != null) {
+                URI requestURI = new URI(receivedData.split(" ")[1]);
+                Map<String, String> queryParameters = QueryData.parseQueryParameters(requestURI.getQuery());
+
+                if ("GET".equalsIgnoreCase(receivedData.split(" ")[0])
+                        && "/lamport".equalsIgnoreCase(requestURI.getPath())) {
+                    respondWithLamportTime(writer);
+                } else {
+                    uploadWeatherDataToAggregateServer(queryParameters.get("filePath"));
+                }
+            }
+        }
+    }
+
+    private void respondWithLamportTime(PrintWriter writer) {
+        long lamportTime = serverHandler.getLamportTime();
+        writer.println(HTTP_OK);
+        writer.println(CONTENT_TYPE_TEXT);
+        writer.println("Content-Length: " + String.valueOf(lamportTime).length());
+        writer.println();
+        writer.println(lamportTime);
+    }
+
+    private void uploadWeatherDataToAggregateServer(String filePath) {
+        WeatherData weatherData = WeatherDataFileManager.readFileAndParse(filePath);
+        if (weatherData == null) {
+            return;
+        }
+
+        long lamportTime = serverHandler.getLamportTime();
+        weatherData.setLamportTime(lamportTime);
+
+        String json = JsonUtils.toJson(weatherData);
+        sendPUTRequest(json);
+    }
+
+    private void sendPUTRequest(String json) {
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL(aggregateServerUrl).openConnection();
+            con.setRequestMethod("PUT");
+            con.setRequestProperty("Content-Type", "application/json; utf-8");
+            con.setDoOutput(true);
+
+            try (DataOutputStream writer = new DataOutputStream(con.getOutputStream())) {
+                writer.writeBytes(json);
+                writer.flush();
+            }
+
+            int responseCode = con.getResponseCode();
+            System.out.println("Sent PUT request. Response Code: " + responseCode);
+
+        } catch (IOException e) {
+            System.err.println("Failed to upload data: " + e.getMessage());
+        }
+    }
+}
