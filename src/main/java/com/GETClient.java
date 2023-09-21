@@ -8,6 +8,12 @@ import com.utils.HttpUtils;
 
 public class GETClient {
 
+    /**
+     * Entry point for the GETClient application.
+     * 
+     * @param args Command-line arguments, expecting <server-name>, <port-number>,
+     *             and optionally <station-id>.
+     */
     public static void main(String[] args) {
         if (args.length < 2) {
             System.out.println("Usage: java GETClient <server-name> <port-number> [station-id]");
@@ -29,6 +35,15 @@ public class GETClient {
         getRequest(lamportClock, serverName, portNumber, stationId);
     }
 
+    /**
+     * Executes a GET request to the given server and port, optionally filtering by
+     * station ID.
+     * 
+     * @param lamportClock LamportClock instance for logical time tracking.
+     * @param serverName   Name of the server to connect to.
+     * @param portNumber   Port number for the server connection.
+     * @param stationId    Optional station ID to filter data.
+     */
     public static void getRequest(LamportClock lamportClock, String serverName, int portNumber, String stationId) {
         String urlString = HttpUtils.buildGetRequestUrl(serverName, portNumber, stationId);
 

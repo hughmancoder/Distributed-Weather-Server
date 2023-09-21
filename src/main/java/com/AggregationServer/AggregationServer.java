@@ -22,6 +22,11 @@ public class AggregationServer {
     private static HashMap<String, WeatherData> weatherDataMap = new HashMap<>();
     private static PriorityBlockingQueue<TimedEntry> weatherDataQueue = new PriorityBlockingQueue<>();
 
+    /**
+     * Main entry point for the AggregationServer.
+     * 
+     * @param args Command-line arguments for port number (optional).
+     */
     public static void main(String[] args) {
         int port = 4567;
         if (args.length > 0) {
@@ -43,6 +48,9 @@ public class AggregationServer {
 
     }
 
+    /**
+     * Remove entries older than 30 seconds.
+     */
     public static void removeOldEntries() {
         lockData(() -> {
             long thresholdTime = System.currentTimeMillis() - THIRTY_SECONDS;
@@ -80,10 +88,18 @@ public class AggregationServer {
 
     }
 
+    /**
+     * Clears all weather data.
+     */
     public static void clearWeatherDataMap() {
         lockData(() -> weatherDataMap.clear());
     }
 
+    /**
+     * Executes a given task with locking to ensure thread safety.
+     *
+     * @param task The task to be executed.
+     */
     private static void lockData(Runnable task) {
         lock.lock();
         try {
@@ -93,10 +109,20 @@ public class AggregationServer {
         }
     }
 
+    /**
+     * Retrieve a copy of the current weather data map.
+     * 
+     * @return A copy of the weather data map.
+     */
     public static HashMap<String, WeatherData> getWeatherDataMap() {
         return new HashMap<>(weatherDataMap); // Deep copy
     }
 
+    /**
+     * Retrieve all weather data as a JSON string.
+     * 
+     * @return A JSON representation of all weather data.
+     */
     public static String getAllWeatherData() {
         lock.lock();
         try {
@@ -107,6 +133,12 @@ public class AggregationServer {
         }
     }
 
+    /**
+     * Retrieve weather data by station ID.
+     * 
+     * @param stationId The station ID to query.
+     * @return A JSON representation of the weather data for the given station.
+     */
     public static String getWeatherByStation(String stationId) {
         lock.lock();
         try {
@@ -121,6 +153,11 @@ public class AggregationServer {
         }
     }
 
+    /**
+     * Add or update a WeatherData object in the weather data map.
+     * 
+     * @param weatherData The WeatherData object to be added or updated.
+     */
     public static void putToWeatherDataMap(WeatherData weatherData) {
         lockData(() -> {
             String id = weatherData.getId();
@@ -132,6 +169,12 @@ public class AggregationServer {
         });
     }
 
+    /**
+     * Attempt to recover data from temporary storage following a crash.
+     * 
+     * @param filePath The file path to check for recoverable data.
+     * @throws IOException if reading from the file fails.
+     */
     public static void recoverFromCrash(String filePath) throws IOException {
         String tempFilePath = filePath + ".tmp";
         if (Files.exists(Paths.get(tempFilePath))) {
