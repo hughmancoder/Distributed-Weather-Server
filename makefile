@@ -3,6 +3,18 @@ CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 CLIENT_ARGS = http://localhost 4567 
 CURRENT_DIR := $(shell pwd)
 
+install:
+	sudo apt update
+	sudo apt install maven
+	
+setup:
+	mvn compile
+	mvn package
+	mvn install
+
+compile:
+	mvn compile
+
 build:
 	mvn clean compile
 

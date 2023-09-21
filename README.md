@@ -12,7 +12,38 @@ A distributed system to aggregate and serve weather data in a coordinated manner
 
 ## How to run
 
-`Refer to makefile`
+### First install maven
+
+Mac
+`brew install maven`
+
+Linux For Ubuntu-based systems:
+
+`sudo apt update
+sudo apt install maven`
+
+### First time setup
+
+`make setup`
+
+Note that all tests will run as maven compiles
+
+### Refer to makefile
+
+`make run-all-servers-mac` runs all servers on mac
+`make run-all-servers-linux` runs all servers on linux
+
+alternatively in new terminal windows you can run the aggregate server, content server and get client respectively
+
+`make test-all` runs all tests
+
+`you can also seperate testing with`
+
+`make run-unit-tests`
+
+`make run-integration-tests`
+
+`make run-other-tests`
 
 ## API Documentation
 
@@ -77,3 +108,7 @@ Make sure port aggregation server and content server are not running or alternat
 
 - The system is able to handle data concurrency and eventual consistency, for which Lamport clocks are implemented.
 - Data from inactive Content Servers or outdated weather data are be purged to maintain data integrity and relevance.
+
+```
+
+```
