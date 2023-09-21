@@ -68,17 +68,17 @@
 
 ### Phase 4: Optimisation & Cleanup
 
-- [ ] Code quality and comments
-- [ ] Comprehensive and integration testing
-- [ ] Test persistance among server restarts and crashes
+- [x] Code quality and comments
+- [x] Comprehensive and integration testing
+- [x] Test persistance among server restarts and crashes
 - [ ] Optional: Implement bonus features like custom JSON parsing
 
 ## Code Quality Checklist (Appendix A)
 
 ### Do
 
-- [ ] Write comments above methods
-- [ ] Describe special cases
+- [x] Write comments above methods
+- [x] Describe special cases
 - [x] Maintain modular code
 
 ### Don't

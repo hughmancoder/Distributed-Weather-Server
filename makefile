@@ -17,9 +17,7 @@ run-integration-tests:
 	mvn test -Dtest=serverIntegrationTests
 
 run-other-tests: 
-	mvn test -Dtest=TestDataExpiry
-
-	#  StatusCodeTests,
+	mvn test -Dtest=TestDataExpiry,StatusCodeTests
 
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server

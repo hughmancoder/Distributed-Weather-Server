@@ -28,17 +28,23 @@ To get weather by station on aggregate server
 
 ## Content server
 
-### Uploading a new file to aggregation server via content server
+### Uploading a new file to aggregation server via content server thorugh PUT request
 
-For example if the content server is running at localhost:4568
+Use the api endpoint:
 
-<http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60901.txt>
-
-<http://localhost:4568/?filePath=src/test/resources/test_weather_data_IDS60902.txt>
+<http://localhost:4567/weather.json>
 
 ## Running tests
 
 Make sure port aggregation server and content server are not running or alternatively 4567 and 4568 are free
+
+## Features
+
+- data expiry on aggregation server every 30 seconds
+- data persistenence and recovery in case of server crash through intermediate storage
+- lamport clocks maintain multithreaded and distributed system environment read and write safety
+- get and put request available from api endpoints
+- get requests available for all weather data and specific weather station ids
 
 ### Aggregation Server
 
@@ -71,5 +77,3 @@ Make sure port aggregation server and content server are not running or alternat
 
 - The system is able to handle data concurrency and eventual consistency, for which Lamport clocks are implemented.
 - Data from inactive Content Servers or outdated weather data are be purged to maintain data integrity and relevance.
-
----

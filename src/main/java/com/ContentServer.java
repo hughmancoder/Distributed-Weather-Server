@@ -14,6 +14,11 @@ public class ContentServer {
 
     private static LamportClock lamportClock = new LamportClock();
 
+    /**
+     * Main entry point for the ContentServer application.
+     * 
+     * @param args Command line arguments, expecting <server:port> and <file_path>.
+     */
     public static void main(String[] args) {
 
         if (args.length != 2) {
@@ -34,6 +39,12 @@ public class ContentServer {
         }
     }
 
+    /**
+     * Send a PUT request to the given server URL.
+     * 
+     * @param serverUrl   The server URL to send the PUT request to.
+     * @param jsonPayload The JSON payload to include in the PUT request.
+     */
     public static void sendPUTRequest(String serverUrl, String jsonPayload) {
         HttpURLConnection conn = null;
         try {
