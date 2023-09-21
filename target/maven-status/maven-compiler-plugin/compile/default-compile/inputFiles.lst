@@ -1,11 +1,11 @@
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/utils/JsonUtils.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/utils/WeatherDataFileManager.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/models/WeatherData.java
-/Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/AggregateServerHttpClient.java
-/Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/AggregationServer.java
+/Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/AggregationServer/AggregationServer.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/GETClient.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/ContentServer.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/utils/ServerHandler.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/utils/LamportClock.java
+/Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/AggregationServer/HttpClient.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/utils/HttpUtils.java
 /Users/hughsignoriello/Desktop/DS-A2/src/main/java/com/models/TimedEntry.java

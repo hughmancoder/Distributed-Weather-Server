@@ -85,7 +85,7 @@ public class JsonUtils {
         if (jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             for (String key : jsonObject.keySet()) {
-                printJson(jsonObject.get(key), keyPrefix.isEmpty() ? key : keyPrefix + "." + key);
+                printJson(jsonObject.get(key), key);
             }
         } else if (jsonElement.isJsonArray()) {
             JsonArray jsonArray = jsonElement.getAsJsonArray();

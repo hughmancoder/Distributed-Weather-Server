@@ -13,11 +13,8 @@ test-all:
 run-unit-tests:
 	mvn test -Dtest=WeatherDataFileManagerTests,JsonUtilsTests
 
-
-
-
 run-integration-tests: 
-	mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests
+	mvn test -Dtest=serverIntegrationTests
 
 run-synchronisation-tests: 
 	mvn test -Dtest=SynchronisationTests

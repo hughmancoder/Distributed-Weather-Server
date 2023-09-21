@@ -1,4 +1,4 @@
-com/AggregateServerHttpClient.class
+com/AggregationServer/HttpClient.class
 com/utils/LamportClock.class
 com/utils/HttpUtils.class
 com/utils/JsonUtils$1.class
@@ -6,8 +6,8 @@ com/GETClient.class
 com/utils/ServerHandler.class
 com/utils/ServerHandler$1.class
 com/models/TimedEntry.class
+com/AggregationServer/AggregationServer.class
 com/utils/JsonUtils.class
 com/utils/WeatherDataFileManager.class
 com/ContentServer.class
 com/models/WeatherData.class
-com/AggregationServer.class

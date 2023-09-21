@@ -73,6 +73,7 @@ public class WeatherData {
         this.windSpeedKt = windSpeedKt;
     }
 
+    // empty data used for testing
     public WeatherData(String id) {
         this.id = id;
         this.name = null;

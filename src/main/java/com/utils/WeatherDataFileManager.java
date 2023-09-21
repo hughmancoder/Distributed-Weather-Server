@@ -108,6 +108,11 @@ public class WeatherDataFileManager {
             return null;
         }
 
+        if (!map.containsKey("id")) {
+            System.out.println("File " + fileLocation + " format invalid as id field cannot be extracted");
+            return null;
+        }
+
         try {
             return new WeatherData(
                     map.getOrDefault("id", ""),

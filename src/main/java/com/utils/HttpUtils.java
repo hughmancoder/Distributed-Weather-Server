@@ -2,9 +2,14 @@ package com.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -55,7 +60,7 @@ public class HttpUtils {
         return conn;
     }
 
-    public static String buildUrlString(String serverName, int portNumber, String stationId) {
+    public static String buildGetRequestUrl(String serverName, int portNumber, String stationId) {
         StringBuilder urlString = new StringBuilder(serverName)
                 .append(":")
                 .append(portNumber)
@@ -66,16 +71,54 @@ public class HttpUtils {
         return urlString.toString();
     }
 
-    public static JsonObject getJSONResponse(HttpURLConnection conn) throws IOException {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            // Reading the JSON response, then close the BufferedReader
-            return JsonParser.parseReader(br).getAsJsonObject();
-        } finally {
-            if (br != null) {
-                br.close();
+    public static Map<String, String> parseQueryParameters(String query) throws UnsupportedEncodingException {
+        Map<String, String> result = new HashMap<>();
+        if (query != null) {
+            for (String param : query.split("&")) {
+                String[] entry = param.split("=");
+                if (entry.length > 1) {
+                    result.put(URLDecoder.decode(entry[0], "UTF-8"), URLDecoder.decode(entry[1], "UTF-8"));
+                }
             }
         }
+        return result;
+    }
+
+    public static LamportClock displayGetRequestResponse(HttpURLConnection conn, LamportClock lamportClock)
+            throws IOException {
+        InputStream inputStream = null;
+        try {
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                inputStream = conn.getInputStream();
+                lamportClock.syncFromHttpResponse(conn);
+                JsonObject responseJSON = JsonUtils.getJSONResponse(conn);
+
+                if (responseJSON == null || responseJSON.size() == 0) {
+                    System.out.println("No weather data available");
+                } else {
+                    JsonUtils.printJson(responseJSON, "");
+                }
+            } else {
+                System.out.println("GET request response: " + responseCode);
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        return lamportClock;
+    }
+
+    public static LamportClock displayPostRequestResponse(HttpURLConnection conn, LamportClock lamportClock) {
+        try {
+            lamportClock.syncFromHttpResponse(conn);
+            int responseCode = conn.getResponseCode();
+            System.out.println("PUT request response: " + responseCode);
+            return lamportClock;
+        } catch (IOException e) {
+            System.out.println("PUT reponse error: " + e.getMessage());
+        }
+        return lamportClock;
     }
 }

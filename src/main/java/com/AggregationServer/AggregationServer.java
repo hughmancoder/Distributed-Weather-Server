@@ -1,4 +1,4 @@
-package com;
+package com.AggregationServer;
 
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,7 +29,7 @@ public class AggregationServer {
             }
         }
 
-        // start aggregation server server
+        // start aggregation server
         ServerHandler serverHandler = new ServerHandler(port, lock, lamportClock, weatherDataMap, true);
         serverHandler.start();
     }

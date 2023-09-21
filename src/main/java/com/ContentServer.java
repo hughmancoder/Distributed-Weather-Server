@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import com.utils.HttpUtils;
 import com.utils.JsonUtils;
 import com.utils.LamportClock;
 import com.utils.WeatherDataFileManager;
@@ -33,12 +35,15 @@ public class ContentServer {
         }
     }
 
-    private static void sendPUTRequest(String serverUrl, String jsonPayload) {
+    public static void sendPUTRequest(String serverUrl, String jsonPayload) {
+        HttpURLConnection conn = null;
         try {
             lamportClock.tick();
+
+            // Initialising the HttpURLConnection
             URL url = new URL(serverUrl + "/weather.json");
-            System.out.println("url: " + url);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpURLConnection) url.openConnection();
+
             conn.setDoOutput(true);
             conn.setRequestMethod("PUT");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -46,23 +51,28 @@ public class ContentServer {
 
             // Send payload
             try (OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream())) {
-                out.write(jsonPayload);
+                if (jsonPayload != null) {
+                    out.write(jsonPayload);
+                } else {
+                    System.out.println("jsonPayload is null. Exiting");
+                    return;
+                }
             }
 
-            // TODO: add to class
-            // Get the Lamport Clock value from the server's response and syncronise
-            String serverClockStr = conn.getHeaderField("X-Lamport-Clock");
-
-            if (serverClockStr != null) {
-                long serverClock = Long.parseLong(serverClockStr);
-                lamportClock.sync(serverClock);
-            }
-
+            // Check HTTP Response Code
             int responseCode = conn.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                lamportClock = HttpUtils.displayPostRequestResponse(conn, lamportClock);
+            } else {
+                System.out.println("PUT request failed: " + responseCode);
+            }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
     }
 }
