@@ -1,57 +1,90 @@
+package com;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 
+import com.google.gson.JsonObject;
+import com.models.WeatherData;
 import com.utils.LamportClock;
+import com.utils.HttpUtils;
+import com.utils.JsonUtils;
 
 public class GETClient {
     public static void main(String[] args) {
-        LamportClock lamportClock = new LamportClock();
-
-        // Read command-line arguments for server name and port number
-        String serverName = args[0];
-        int portNumber = Integer.parseInt(args[1]);
-        String stationId = args.length > 2 ? args[2] : null;
-
-        String urlString = "http://" + serverName + ":" + portNumber;
-        if (stationId != null) {
-            urlString += "?station=" + stationId;
+        if (args.length < 2) {
+            System.out.println("Usage: java GETClient <server-name> <port-number> [station-id]");
+            return;
         }
 
-        while (true) {
-            try {
-                lamportClock.tick();
+        LamportClock lamportClock = new LamportClock();
+        String serverName = args[0];
+        int portNumber;
+        try {
+            portNumber = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid port number.");
+            return;
+        }
+        String stationId = args.length > 2 ? args[2] : null;
+        String urlString = HttpUtils.buildUrlString(serverName, portNumber, stationId);
+        System.out.println("urlString: " + urlString);
 
-                // Create URL and open connection
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = null;
+        try {
+            lamportClock.tick();
+            conn = HttpUtils.createConnection(urlString, lamportClock);
+            handleResponse(conn, lamportClock);
+        } catch (IOException e) {
+            System.err.println("An IO error occurred: " + e.getMessage());
+            if ("Too many open files".equals(e.getMessage())) {
 
-                // Set request method and headers
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("X-Lamport-Clock", String.valueOf(lamportClock.getTime()));
+            }
+        } catch (Exception e) {
+            System.err.println("An exception occurred: " + e.getMessage());
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
 
-                // Get Response and Lamport Clock synchronization
-                int responseCode = conn.getResponseCode();
-                if (responseCode == 200) {
-                    String lamportHeader = conn.getHeaderField("X-Lamport-Clock");
-                    if (lamportHeader != null) {
-                        lamportClock.sync(Long.parseLong(lamportHeader));
-                    }
+        try {
+            // Add a delay of 1 second before next attempt
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // Handle InterruptedException
+            Thread.currentThread().interrupt();
 
-                    //
-                    JSONObject responseJSON = getJSONResponse(conn);
+        }
 
-                    // Display data
-                    for (String key : responseJSON.keySet()) {
-                        System.out.println(key + ": " + responseJSON.get(key));
-                    }
+    }
+
+    private static void handleResponse(HttpURLConnection conn, LamportClock lamportClock) throws IOException {
+        InputStream inputStream = null;
+        try {
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                inputStream = conn.getInputStream();
+                lamportClock.syncFromHttpResponse(conn);
+
+                JsonObject responseJSON = JsonUtils.getJSONResponse(conn);
+
+                if (responseJSON == null || responseJSON.size() == 0) {
+                    System.out.println("No weather data available");
+
                 } else {
-                    // Handle errors
+                    JsonUtils.printJson(responseJSON, "");
                 }
 
-                // Add failure-tolerance logic (retries, backoff, etc.)
-            } catch (Exception e) {
-                // Log the exception and consider retrying
+            } else {
+                System.out.println("Received response code: " + responseCode);
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
             }
         }
     }
+
 }

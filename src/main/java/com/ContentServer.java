@@ -35,6 +35,7 @@ public class ContentServer {
 
     private static void sendPUTRequest(String serverUrl, String jsonPayload) {
         try {
+            lamportClock.tick();
             URL url = new URL(serverUrl + "/weather.json");
             System.out.println("url: " + url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -48,10 +49,10 @@ public class ContentServer {
                 out.write(jsonPayload);
             }
 
-            // Get the Lamport Clock value from the server's response, if it's there
+            // TODO: add to class
+            // Get the Lamport Clock value from the server's response and syncronise
             String serverClockStr = conn.getHeaderField("X-Lamport-Clock");
 
-            // Synchronize Lamport Clocks after receiving server's response
             if (serverClockStr != null) {
                 long serverClock = Long.parseLong(serverClockStr);
                 lamportClock.sync(serverClock);

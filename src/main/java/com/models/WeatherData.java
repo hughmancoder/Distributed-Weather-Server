@@ -1,10 +1,5 @@
 package com.models;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-
 import com.google.gson.annotations.SerializedName;
 
 public class WeatherData {
@@ -53,8 +48,6 @@ public class WeatherData {
 
     @SerializedName("wind_spd_kt")
     private int windSpeedKt;
-
-    private long lamportTime;
 
     public WeatherData(String id, String name, String state, String timeZone, double latitude, double longitude,
             String localDateTime, String localDateTimeFull, double airTemperature, double apparentTemperature,
@@ -234,14 +227,6 @@ public class WeatherData {
 
     public void setWindSpeedKt(int windSpeedKt) {
         this.windSpeedKt = windSpeedKt;
-    }
-
-    public long getLamportTime() {
-        return lamportTime;
-    }
-
-    public void setLamportTime(long lamportTime) {
-        this.lamportTime = lamportTime;
     }
 
     public void showWeatherData() {

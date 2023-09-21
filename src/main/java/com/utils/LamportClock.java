@@ -1,5 +1,7 @@
 package com.utils;
 
+import java.net.HttpURLConnection;
+
 public class LamportClock {
     private long time;
 
@@ -17,5 +19,12 @@ public class LamportClock {
 
     public synchronized long getTime() {
         return time;
+    }
+
+    public synchronized void syncFromHttpResponse(HttpURLConnection conn) {
+        String lamportHeader = conn.getHeaderField("X-Lamport-Clock");
+        if (lamportHeader != null) {
+            sync(Long.parseLong(lamportHeader));
+        }
     }
 }

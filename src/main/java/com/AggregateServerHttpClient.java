@@ -7,11 +7,10 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.annotations.JsonAdapter;
 import com.models.WeatherData;
 import com.utils.JsonUtils;
 import com.utils.LamportClock;
-import com.utils.RequestData;
+import com.utils.HttpUtils;
 
 public class AggregateServerHttpClient {
     private Socket clientSocket;
@@ -39,10 +38,8 @@ public class AggregateServerHttpClient {
             URI uri = URI.create(requestParts[1]);
             Map<String, String> queryParameters = parseQueryParameters(uri.getQuery());
 
-            // Call the helper function to read the headers and request body
-            RequestData requestData = RequestData.readRequest(in);
+            HttpUtils requestData = HttpUtils.readRequest(in);
 
-            // Synchronize the Lamport Clock
             lamportClock.sync(requestData.lamportClock);
 
             // Proceed to handle the request based on the method
@@ -59,7 +56,6 @@ public class AggregateServerHttpClient {
         switch (method) {
             case "GET":
                 String stationId = queryParameters.get("station");
-                System.out.println("Handling GET request for " + stationId);
                 AggregationGETRequest(out, stationId);
                 break;
             case "PUT":

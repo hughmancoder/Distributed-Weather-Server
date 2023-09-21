@@ -4,7 +4,10 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.models.WeatherData;
@@ -61,6 +66,37 @@ public class JsonUtils {
         } catch (IOException e) {
             System.err.println("An error occurred while reading the JSON file: " + e.getMessage());
             return null;
+        }
+    }
+
+    public static JsonObject getJSONResponse(HttpURLConnection conn) throws IOException {
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        return JsonUtils.parseStringToJson(response.toString());
+    }
+
+    public static void printJson(JsonElement jsonElement, String keyPrefix) {
+        if (jsonElement.isJsonObject()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            for (String key : jsonObject.keySet()) {
+                printJson(jsonObject.get(key), keyPrefix.isEmpty() ? key : keyPrefix + "." + key);
+            }
+        } else if (jsonElement.isJsonArray()) {
+            JsonArray jsonArray = jsonElement.getAsJsonArray();
+            int index = 0;
+            for (JsonElement element : jsonArray) {
+                printJson(element, keyPrefix + "[" + (index++) + "]");
+            }
+        } else {
+            System.out.println(keyPrefix + ": " + jsonElement.toString());
         }
     }
 }
