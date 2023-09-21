@@ -7,7 +7,11 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.annotations.JsonAdapter;
+import com.models.WeatherData;
+import com.utils.JsonUtils;
 import com.utils.LamportClock;
+import com.utils.RequestData;
 
 public class AggregateServerHttpClient {
     private Socket clientSocket;
@@ -35,10 +39,14 @@ public class AggregateServerHttpClient {
             URI uri = URI.create(requestParts[1]);
             Map<String, String> queryParameters = parseQueryParameters(uri.getQuery());
 
-            System.out.println("request line" + requestLine);
-            // String incomingClockStr = ...;
-            // lamportClock.sync(Long.parseLong(incomingClockStr));
-            handleWeatherRequest(method, in, out, queryParameters);
+            // Call the helper function to read the headers and request body
+            RequestData requestData = RequestData.readRequest(in);
+
+            // Synchronize the Lamport Clock
+            lamportClock.sync(requestData.lamportClock);
+
+            // Proceed to handle the request based on the method
+            handleWeatherRequest(method, in, out, queryParameters, requestData.requestBody);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,7 +54,8 @@ public class AggregateServerHttpClient {
     }
 
     private void handleWeatherRequest(String method, BufferedReader in, PrintWriter out,
-            Map<String, String> queryParameters) {
+            Map<String, String> queryParameters, String requestBody) {
+        System.out.println("request body " + requestBody);
         switch (method) {
             case "GET":
                 String stationId = queryParameters.get("station");
@@ -54,19 +63,7 @@ public class AggregateServerHttpClient {
                 AggregationGETRequest(out, stationId);
                 break;
             case "PUT":
-                System.out.println("Handling PUT request");
-                StringBuilder payload = new StringBuilder();
-                String line;
-                try {
-                    while ((line = in.readLine()) != null) {
-                        payload.append(line);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    out.println("HTTP/1.1 500 Internal Server Error");
-                    return;
-                }
-                AggregationPUTRequest(out, payload.toString());
+                AggregationPUTRequest(out, requestBody);
                 break;
             default:
                 out.println("HTTP/1.1 405 Method Not Allowed");
@@ -76,7 +73,8 @@ public class AggregateServerHttpClient {
     private void AggregationGETRequest(PrintWriter out, String stationId) {
         lamportClock.tick();
         // Replace with your actual logic
-        String jsonResponse = "{response}"; // Placeholder
+        String jsonResponse = stationId == null ? AggregationServer.getAllWeatherData()
+                : AggregationServer.getWeatherByStation(stationId);
         out.println("HTTP/1.1 200 OK");
         out.println("Content-Type: application/json");
         out.println("X-Lamport-Clock: " + lamportClock.getTime());
@@ -86,8 +84,9 @@ public class AggregateServerHttpClient {
 
     private void AggregationPUTRequest(PrintWriter out, String jsonPayload) {
         lamportClock.tick();
-        // Implement your logic to update weather data using jsonPayload
-
+        System.out.println("Handling PUT request with payload: " + jsonPayload);
+        WeatherData wd = JsonUtils.fromJson(jsonPayload);
+        AggregationServer.putToWeatherDataMap(wd);
         out.println("HTTP/1.1 200 OK");
         out.println("X-Lamport-Clock: " + lamportClock.getTime());
         out.println();

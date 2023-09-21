@@ -37,7 +37,7 @@ public class AggregationServer {
     public static void removeOldEntries() {
         lockData(() -> {
             long thresholdTime = System.currentTimeMillis() - THIRTY_SECONDS;
-            System.out.println("Removing entries older than " + thresholdTime);
+            System.out.println("Purging expired entries...");
 
             // Remove old entries from PriorityBlockingQueue
             while (true) {

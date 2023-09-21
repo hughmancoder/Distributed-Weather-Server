@@ -1,59 +1,57 @@
-// package com;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-// import java.io.BufferedReader;
-// import java.io.InputStreamReader;
-// import java.net.HttpURLConnection;
-// import java.net.URL;
-// import com.utils.LamportClock;
-// import com.google.gson.JsonObject;
-// import com.google.gson.JsonParser;
+import com.utils.LamportClock;
 
-// public class GETClient {
+public class GETClient {
+    public static void main(String[] args) {
+        LamportClock lamportClock = new LamportClock();
 
-// private static LamportClock lamportClock = new LamportClock();
+        // Read command-line arguments for server name and port number
+        String serverName = args[0];
+        int portNumber = Integer.parseInt(args[1]);
+        String stationId = args.length > 2 ? args[2] : null;
 
-// public static void main(String[] args) {
-// String serverUrl = args[0];
-// String optionalStationId = args.length > 1 ? args[1] : null;
+        String urlString = "http://" + serverName + ":" + portNumber;
+        if (stationId != null) {
+            urlString += "?station=" + stationId;
+        }
 
-// try {
-// lamportClock.tick();
-// String jsonResponse = sendGETRequest(serverUrl, optionalStationId);
-// JsonObject jsonObject =
-// JsonParser.parseString(jsonResponse).getAsJsonObject();
+        while (true) {
+            try {
+                lamportClock.tick();
 
-// for (String key : jsonObject.keySet()) {
-// System.out.println(key + ": " + jsonObject.get(key).getAsString());
-// }
+                // Create URL and open connection
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-// } catch (Exception e) {
-// e.printStackTrace();
-// }
-// }
+                // Set request method and headers
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("X-Lamport-Clock", String.valueOf(lamportClock.getTime()));
 
-// private static String sendGETRequest(String serverUrl, String
-// optionalStationId) throws IOException {
-// String fullUrl = serverUrl + "/weather";
-// if (optionalStationId != null) {
-// fullUrl += "?station=" + optionalStationId;
-// }
+                // Get Response and Lamport Clock synchronization
+                int responseCode = conn.getResponseCode();
+                if (responseCode == 200) {
+                    String lamportHeader = conn.getHeaderField("X-Lamport-Clock");
+                    if (lamportHeader != null) {
+                        lamportClock.sync(Long.parseLong(lamportHeader));
+                    }
 
-// URL url = new URL(fullUrl);
-// HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-// conn.setRequestMethod("GET");
-// conn.setRequestProperty("X-Lamport-Clock",
-// Integer.toString(lamportClock.getTime()));
+                    //
+                    JSONObject responseJSON = getJSONResponse(conn);
 
-// BufferedReader in = new BufferedReader(new
-// InputStreamReader(conn.getInputStream()));
-// String inputLine;
-// StringBuilder response = new StringBuilder();
+                    // Display data
+                    for (String key : responseJSON.keySet()) {
+                        System.out.println(key + ": " + responseJSON.get(key));
+                    }
+                } else {
+                    // Handle errors
+                }
 
-// while ((inputLine = in.readLine()) != null) {
-// response.append(inputLine);
-// }
-// in.close();
-
-// return response.toString();
-// }
-// }
+                // Add failure-tolerance logic (retries, backoff, etc.)
+            } catch (Exception e) {
+                // Log the exception and consider retrying
+            }
+        }
+    }
+}
