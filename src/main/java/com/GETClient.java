@@ -1,12 +1,11 @@
 package com;
 
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
 
 import com.google.gson.JsonObject;
-import com.models.WeatherData;
+
 import com.utils.LamportClock;
 import com.utils.HttpUtils;
 import com.utils.JsonUtils;

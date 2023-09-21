@@ -11,7 +11,10 @@ test-all:
 	mvn test
 
 run-unit-tests:
-	mvn test -Dtest=AggregationServerUnitTests.java,UtilityUnitTests.java,WeatherDataUnitTests.java
+	mvn test -Dtest=WeatherDataFileManagerTests,JsonUtilsTests
+
+
+
 
 run-integration-tests: 
 	mvn test -Dtest=ContentServerIntegrationTests,GETClientIntegrationTests

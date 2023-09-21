@@ -24,14 +24,12 @@ import com.models.WeatherData;
 public class JsonUtils {
     private static final Gson gson = new Gson();
 
-    // TODO: test
     public static HashMap<String, WeatherData> jsonToWeatherDataMap(String json) {
         Type type = new TypeToken<HashMap<String, WeatherData>>() {
         }.getType();
         return gson.fromJson(json, type);
     }
 
-    // TODO: test
     public static JsonObject parseStringToJson(String jsonResponse) {
         return JsonParser.parseString(jsonResponse).getAsJsonObject();
     }

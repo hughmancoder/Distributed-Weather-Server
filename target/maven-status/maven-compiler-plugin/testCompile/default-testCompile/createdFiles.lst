@@ -1,2 +1,3 @@
-com/integration/GETClientIntegrationTests.class
-com/integration/ContentServerIntegrationTests.class
+com/ErrorTests.class
+com/unit/WeatherDataFileManagerTests.class
+com/unit/JsonUtilsTests.class

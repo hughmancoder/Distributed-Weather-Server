@@ -14,12 +14,12 @@ import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.gson.JsonSyntaxException;
 import com.models.WeatherData;
 
 public class WeatherDataFileManager {
 
     private static final Lock dataLock = new ReentrantLock();
-    private static HashMap<String, WeatherData> weatherDataMap;
 
     public static void lockData(Runnable action) {
         dataLock.lock();
@@ -30,7 +30,8 @@ public class WeatherDataFileManager {
         }
     }
 
-    public static void weatherDataMapToFile(String filePath) throws IOException {
+    public static void weatherDataMapToFile(String filePath, HashMap<String, WeatherData> weatherDataMap)
+            throws IOException {
         lockData(() -> {
             try {
                 Path path = Paths.get(filePath);
@@ -55,23 +56,32 @@ public class WeatherDataFileManager {
         });
     }
 
-    public static void fileToWeatherDataMap(String filePath) throws IOException {
-        lockData(() -> {
-            try {
-                Path path = Paths.get(filePath);
-                if (Files.exists(path)) {
-                    try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.READ)) {
-                        ByteBuffer buffer = ByteBuffer.allocate((int) fileChannel.size());
-                        fileChannel.read(buffer);
-                        buffer.flip();
-                        String json = StandardCharsets.UTF_8.decode(buffer).toString();
-                        weatherDataMap = JsonUtils.jsonToWeatherDataMap(json); // Replace with your util
+    public static HashMap<String, WeatherData> fileToWeatherDataMap(String filePath) throws IOException {
+        final HashMap<String, WeatherData>[] weatherDataMap = new HashMap[] { new HashMap<>() };
+        try {
+            lockData(() -> {
+                try {
+                    Path path = Paths.get(filePath);
+                    if (Files.exists(path)) {
+                        try (FileChannel fileChannel = FileChannel.open(path, StandardOpenOption.READ)) {
+                            ByteBuffer buffer = ByteBuffer.allocate((int) fileChannel.size());
+                            fileChannel.read(buffer);
+                            buffer.flip();
+                            String json = StandardCharsets.UTF_8.decode(buffer).toString();
+                            weatherDataMap[0] = JsonUtils.jsonToWeatherDataMap(json);
+                        }
                     }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            });
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
             }
-        });
+            throw new IOException("An error occurred in reading file", e);
+        }
+        return weatherDataMap[0];
     }
 
     public static WeatherData readFileAndParse(String fileLocation) {
