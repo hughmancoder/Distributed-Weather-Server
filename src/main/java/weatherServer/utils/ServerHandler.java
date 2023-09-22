@@ -1,4 +1,4 @@
-package com.utils;
+package weatherServer.utils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,9 +10,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.AggregationServer.AggregationServer;
-import com.AggregationServer.HttpClient;
-import com.models.WeatherData;
+import weatherServer.AggregationServer.AggregationServer;
+import weatherServer.AggregationServer.HttpClient;
+import weatherServer.models.WeatherData;
 
 public class ServerHandler {
     private int port;

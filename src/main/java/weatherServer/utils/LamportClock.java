@@ -1,4 +1,4 @@
-package com.utils;
+package weatherServer.utils;
 
 import java.net.HttpURLConnection;
 

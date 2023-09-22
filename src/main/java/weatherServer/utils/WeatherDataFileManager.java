@@ -1,4 +1,4 @@
-package com.utils;
+package weatherServer.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,7 +13,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import com.models.WeatherData;
+import weatherServer.models.WeatherData;
 
 public class WeatherDataFileManager {
 

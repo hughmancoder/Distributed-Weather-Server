@@ -1,4 +1,4 @@
-package com;
+package weatherServer;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,9 +8,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.models.WeatherData;
-import com.utils.LamportClock;
-import com.utils.ServerHandler;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.ServerHandler;
 
 public class StatusCodeTests {
     private static final String TEXT_FILE = "src/test/resources/test_weather_data_IDS60901.txt";

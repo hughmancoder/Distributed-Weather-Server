@@ -1,4 +1,4 @@
-package com.unit;
+package weatherServer.unit;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,9 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import com.models.WeatherData;
-import com.utils.JsonUtils;
-import com.utils.WeatherDataFileManager;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.JsonUtils;
+import weatherServer.utils.WeatherDataFileManager;
 
 import junit.framework.TestCase;
 

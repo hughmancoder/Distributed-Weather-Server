@@ -1,14 +1,14 @@
-package com;
+package weatherServer;
 
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.utils.HttpUtils;
-import com.utils.JsonUtils;
-import com.utils.LamportClock;
-import com.utils.WeatherDataFileManager;
-import com.models.WeatherData;
+import weatherServer.utils.HttpUtils;
+import weatherServer.utils.JsonUtils;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.WeatherDataFileManager;
+import weatherServer.models.WeatherData;
 
 public class ContentServer {
 

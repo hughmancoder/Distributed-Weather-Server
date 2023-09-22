@@ -1,4 +1,4 @@
-package com.models;
+package weatherServer.models;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com;
+package weatherServer;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -14,11 +14,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
-import com.models.WeatherData;
-import com.utils.HttpUtils;
-import com.utils.JsonUtils;
-import com.utils.LamportClock;
-import com.utils.ServerHandler;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.HttpUtils;
+import weatherServer.utils.JsonUtils;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.ServerHandler;
 
 public class TestDataExpiry {
     private static final String TEXT_FILE = "src/test/resources/test_weather_data_IDS60901.txt";

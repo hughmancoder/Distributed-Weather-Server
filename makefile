@@ -55,10 +55,10 @@ run-all-servers-mac:
 	osascript -e 'tell app "Terminal" to do script "cd $(CURRENT_DIR) && make run-content-server"'
 
 run-aggregation-server:
-	mvn exec:java -Dexec.mainClass="com.AggregationServer.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
+	mvn exec:java -Dexec.mainClass="weatherServer.AggregationServer.AggregationServer" -Dexec.args="$(AGGREGATION_SERVER_ARGS)"
 
 run-content-server:
-	mvn exec:java -Dexec.mainClass="com.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
+	mvn exec:java -Dexec.mainClass="weatherServer.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
 
 run-client:
-	mvn exec:java -Dexec.mainClass="com.GETClient" -Dexec.args="$(CLIENT_ARGS)"
+	mvn exec:java -Dexec.mainClass="weatherServer.GETClient" -Dexec.args="$(CLIENT_ARGS)"

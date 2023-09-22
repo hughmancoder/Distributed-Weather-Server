@@ -1,10 +1,10 @@
-package com;
+package weatherServer;
 
 import java.net.HttpURLConnection;
 import java.io.IOException;
 
-import com.utils.LamportClock;
-import com.utils.HttpUtils;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.HttpUtils;
 
 public class GETClient {
 

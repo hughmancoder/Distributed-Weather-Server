@@ -1,4 +1,4 @@
-package com.integration;
+package weatherServer.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -14,14 +14,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.ContentServer;
-import com.GETClient;
 import com.google.gson.JsonObject;
-import com.models.WeatherData;
-import com.utils.HttpUtils;
-import com.utils.JsonUtils;
-import com.utils.LamportClock;
-import com.utils.ServerHandler;
+import weatherServer.ContentServer;
+import weatherServer.GETClient;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.HttpUtils;
+import weatherServer.utils.JsonUtils;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.ServerHandler;
 
 public class serverIntegrationTests {
     private static final String TEXT_FILE = "src/test/resources/test_weather_data_IDS60901.txt";

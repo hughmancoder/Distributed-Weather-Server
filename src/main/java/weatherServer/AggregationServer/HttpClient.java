@@ -1,4 +1,4 @@
-package com.AggregationServer;
+package weatherServer.AggregationServer;
 
 import java.io.*;
 import java.net.Socket;
@@ -6,11 +6,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.models.WeatherData;
-import com.utils.JsonUtils;
-import com.utils.LamportClock;
-import com.utils.WeatherDataFileManager;
-import com.utils.HttpUtils;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.JsonUtils;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.WeatherDataFileManager;
+import weatherServer.utils.HttpUtils;
 
 public class HttpClient {
     private Socket clientSocket;

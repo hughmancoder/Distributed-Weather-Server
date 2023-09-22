@@ -1,4 +1,4 @@
-package com.AggregationServer;
+package weatherServer.AggregationServer;
 
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import com.models.WeatherData;
-import com.utils.JsonUtils;
-import com.utils.LamportClock;
-import com.utils.ServerHandler;
-import com.utils.WeatherDataFileManager;
-import com.models.TimedEntry;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.JsonUtils;
+import weatherServer.utils.LamportClock;
+import weatherServer.utils.ServerHandler;
+import weatherServer.utils.WeatherDataFileManager;
+import weatherServer.models.TimedEntry;
 
 public class AggregationServer {
     public static final String DATA_STORAGE_PATH = "../../resources/temp_storage";

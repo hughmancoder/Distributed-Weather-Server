@@ -1,4 +1,4 @@
-package com.models;
+package weatherServer.models;
 
 public class TimedEntry implements Comparable<TimedEntry> {
     private String id;

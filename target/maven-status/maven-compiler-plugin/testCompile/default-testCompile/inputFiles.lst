@@ -1,5 +1,5 @@
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/unit/WeatherDataFileManagerTests.java
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/TestDataExpiry.java
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/integration/serverIntegrationTests.java
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/unit/JsonUtilsTests.java
-/Users/hughsignoriello/Desktop/DS-A2/src/test/java/com/StatusCodeTests.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/weatherServer/unit/JsonUtilsTests.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/weatherServer/unit/WeatherDataFileManagerTests.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/weatherServer/TestDataExpiry.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/weatherServer/integration/serverIntegrationTests.java
+/Users/hughsignoriello/Desktop/DS-A2/src/test/java/weatherServer/StatusCodeTests.java

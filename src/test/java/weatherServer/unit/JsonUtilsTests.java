@@ -1,4 +1,4 @@
-package com.unit;
+package weatherServer.unit;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -7,8 +7,8 @@ import junit.framework.TestSuite;
 import java.util.HashMap;
 
 import com.google.gson.JsonObject;
-import com.models.WeatherData;
-import com.utils.JsonUtils;
+import weatherServer.models.WeatherData;
+import weatherServer.utils.JsonUtils;
 
 public class JsonUtilsTests extends TestCase {
 

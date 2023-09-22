@@ -1,7 +1,13 @@
-package com.utils;
+package weatherServer.utils;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import weatherServer.models.WeatherData;
 
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -13,13 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.models.WeatherData;
 
 public class JsonUtils {
     private static final Gson gson = new Gson();
