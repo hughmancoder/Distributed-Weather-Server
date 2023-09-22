@@ -1,34 +1,42 @@
+MVN = mvn
 JAVAC = javac
 SRC_DIR = src/main/java
 BIN_DIR = target/classes
-CLASSPATH = $(BIN_DIR)
+GSON_JAR = bin/gson-2.8.8.jar
+CLASSPATH = $(BIN_DIR):lib/*:$(GSON_JAR)  # Include Gson jar
 JAVA_FILES = $(shell find $(SRC_DIR) -name "*.java")
 
 AGGREGATION_SERVER_ARGS = 4567
-CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
-CLIENT_ARGS = http://localhost 4567 
+CONTENT_SERVER_ARGS = "http://localhost:4567 src/main/resources/weather_data.txt"
+CLIENT_ARGS = "http://localhost 4567"
 CURRENT_DIR := $(shell pwd)
 
-all: compile
+all: compile-javac
 
-compile:
+# Compile Java files using javac
+compile-javac:
+	mkdir -p $(BIN_DIR)
 	$(JAVAC) -d $(BIN_DIR) -cp $(CLASSPATH) $(JAVA_FILES)
+
+# Compile Java files using Maven
+compile-mvn:
+	$(MVN) compile
 
 install:
 	@echo "Updating system packages..."
-	@sh -c "sudo apt update"
+	@sudo apt update
 	@echo "Installing Maven..."
-	@sh -c "sudo apt install maven"
-	
+	@sudo apt install maven
+
+clean:
+	mvn clean
+
 setup:
 	mvn compile
 	mvn package
 	mvn install
 
-compile:
-	mvn compile
-
-mvn-build:
+build:
 	mvn clean compile
 
 test-all:
@@ -38,15 +46,15 @@ test-all:
 run-unit-tests:
 	mvn test -Dtest=WeatherDataFileManagerTests,JsonUtilsTests
 
-run-integration-tests: 
+run-integration-tests:
 	mvn test -Dtest=serverIntegrationTests
 
-run-other-tests: 
+run-other-tests:
 	mvn test -Dtest=TestDataExpiry,StatusCodeTests
 
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
-	gnome-terminal --tab --active --title="Content Server" -- make run-content-server	
+	gnome-terminal --tab --active --title="Content Server" -- make run-content-server
 
 run-all-servers-mac:
 	osascript -e 'tell app "Terminal" to do script "cd $(CURRENT_DIR) && make run-aggregation-server"'
