@@ -14,6 +14,8 @@ A distributed system to aggregate and serve weather data in a coordinated manner
 
 ### First install maven
 
+`make install`
+
 Mac
 `brew install maven`
 
@@ -27,6 +29,8 @@ sudo apt install maven`
 `make setup`
 
 Note that all tests will run as maven compiles
+
+`compile-mvn` compiles folders(note compile-javac does not use maven and is simply a placeholder to pass gradescope environment compilation)
 
 ### Refer to makefile
 
