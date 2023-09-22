@@ -33,7 +33,7 @@ public class ContentServer {
         String jsonPayload = JsonUtils.toJson(wd);
 
         if (jsonPayload != null) {
-            sendPUTRequest(serverUrl, jsonPayload);
+            sendPUTRequest(serverUrl, jsonPayload, lamportClock);
         } else {
             System.err.println("Failed to read or convert the file to JSON");
         }
@@ -42,10 +42,12 @@ public class ContentServer {
     /**
      * Send a PUT request to the given server URL.
      * 
-     * @param serverUrl   The server URL to send the PUT request to.
-     * @param jsonPayload The JSON payload to include in the PUT request.
+     * @param serverUrl    The server URL to send the PUT request to.
+     * @param jsonPayload  The JSON payload to include in the PUT request.
+     * @param lamportClock The Servers LamportClock.
+     * @returns lamportClock: The updated LamportClock.
      */
-    public static void sendPUTRequest(String serverUrl, String jsonPayload) {
+    public static LamportClock sendPUTRequest(String serverUrl, String jsonPayload, LamportClock lamportClock) {
         HttpURLConnection conn = null;
         try {
             lamportClock.tick();
@@ -65,7 +67,7 @@ public class ContentServer {
                     out.write(jsonPayload);
                 } else {
                     System.out.println("jsonPayload is null. Exiting");
-                    return;
+                    return lamportClock;
                 }
             }
 
@@ -84,5 +86,6 @@ public class ContentServer {
                 conn.disconnect();
             }
         }
+        return lamportClock;
     }
 }

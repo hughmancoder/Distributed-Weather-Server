@@ -73,11 +73,19 @@
 - [x] Test persistance among server restarts and crashes
 - [ ] Optional: Implement bonus features like custom JSON parsing
 
+## Other tests and tasks
+
+- [ ] implement a mechanism to sort and send weather data based on local_date_time_full while considering factors like Lamport clocks for maintaining order.
+- [ ] Add retry mechanism to put request of order 10
+- [ ] Test concurrent and parallel content server environment
+- [ ] Write a script to test multiple content serfer put requests and get lamport clock
+- [ ] Status code tests
+
 ## Code Quality Checklist (Appendix A)
 
 ### Do
 
-- [x] Write comments above methods
+- [ ] Write comments above methods
 - [x] Describe special cases
 - [x] Maintain modular code
 

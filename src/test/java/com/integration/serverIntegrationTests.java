@@ -66,7 +66,7 @@ public class serverIntegrationTests {
         String jsonPayload = JsonUtils.toJson(weatherData);
 
         try {
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload);
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload, lamportClock);
         } catch (Exception e) {
             fail("An exception should not have been thrown: " + e.getMessage());
         }
@@ -90,7 +90,7 @@ public class serverIntegrationTests {
 
         // TESTING CONTENT SERVER GET REQUEST
         try {
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload);
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload, lamportClock);
         } catch (Exception e) {
             fail("An exception should not have been thrown: " + e.getMessage());
         }

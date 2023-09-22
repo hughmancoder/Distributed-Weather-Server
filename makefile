@@ -3,6 +3,21 @@ CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 CLIENT_ARGS = http://localhost 4567 
 CURRENT_DIR := $(shell pwd)
 
+# all: build
+# # target: build - compile all Java
+# files build: $
+# (CONTENT SERVER JAVA FILES) $
+# (AGGREGATION_SERVER_JAVA_FILES) $
+# (CLIENT JAVA FILES) $
+# (JSON JAVA FILES) $
+# (LAMPORT CLOCK JAVA FILES)
+# @$ (JAVAC) - cp src $
+# (CONTENT SERVER JAVA FILES) $
+# (AGGREGATION SERVER JAVA FILES) $
+# (CLIENT JAVA FILES) $
+# (JSON JAVA FILES) $
+# (LAMPORT CLOCK JAVA FILES)
+
 install:
 	sudo apt update
 	sudo apt install maven
@@ -15,7 +30,7 @@ setup:
 compile:
 	mvn compile
 
-build:
+mvn-build:
 	mvn clean compile
 
 test-all:

@@ -52,7 +52,7 @@ public class StatusCodeTests {
     public void testBadRequest400() {
         try {
             String invalidJsonPayload = "....";
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, invalidJsonPayload);
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, invalidJsonPayload, lamportClock);
             // fail("An exception should have been thrown");
         } catch (Exception e) {
             assertEquals("HTTP/1.1 400 Bad Request", e.getMessage());
@@ -63,7 +63,7 @@ public class StatusCodeTests {
     public void testMissingStationId404() {
         try {
             ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL + "?station=missing_id",
-                    "{}");
+                    "{}", lamportClock);
 
         } catch (Exception e) {
             assertEquals("HTTP/1.1 404 Not Found", e.getMessage());
@@ -73,7 +73,7 @@ public class StatusCodeTests {
     @Test
     public void testNoContent204() {
         try {
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, "{}");
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, "{}", lamportClock);
         } catch (Exception e) {
             assertEquals("HTTP/1.1 204 No Content", e.getMessage());
         }

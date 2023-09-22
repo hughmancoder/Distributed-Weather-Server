@@ -74,7 +74,7 @@ public class TestDataExpiry {
         // Send this data to the server
         String jsonPayload = JsonUtils.toJson(expiredWeatherData);
         try {
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload);
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload, lamportClock);
         } catch (Exception e) {
             fail("An exception should not have been thrown during PUT: " + e.getMessage());
         }
