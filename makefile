@@ -1,26 +1,24 @@
+JAVAC = javac
+SRC_DIR = src/main/java
+BIN_DIR = target/classes
+CLASSPATH = $(BIN_DIR)
+JAVA_FILES = $(shell find $(SRC_DIR) -name "*.java")
+
 AGGREGATION_SERVER_ARGS = 4567
 CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 CLIENT_ARGS = http://localhost 4567 
 CURRENT_DIR := $(shell pwd)
 
-# all: build
-# # target: build - compile all Java
-# files build: $
-# (CONTENT SERVER JAVA FILES) $
-# (AGGREGATION_SERVER_JAVA_FILES) $
-# (CLIENT JAVA FILES) $
-# (JSON JAVA FILES) $
-# (LAMPORT CLOCK JAVA FILES)
-# @$ (JAVAC) - cp src $
-# (CONTENT SERVER JAVA FILES) $
-# (AGGREGATION SERVER JAVA FILES) $
-# (CLIENT JAVA FILES) $
-# (JSON JAVA FILES) $
-# (LAMPORT CLOCK JAVA FILES)
+all: compile
+
+compile:
+	$(JAVAC) -d $(BIN_DIR) -cp $(CLASSPATH) $(JAVA_FILES)
 
 install:
-	sudo apt update
-	sudo apt install maven
+	@echo "Updating system packages..."
+	@sh -c "sudo apt update"
+	@echo "Installing Maven..."
+	@sh -c "sudo apt install maven"
 	
 setup:
 	mvn compile
