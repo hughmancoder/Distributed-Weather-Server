@@ -75,11 +75,10 @@
 
 ## Other tests and tasks
 
-- [ ] implement a mechanism to sort and send weather data based on local_date_time_full while considering factors like Lamport clocks for maintaining order.
-- [ ] Add retry mechanism to put request of order 10
+- [x] Add retry mechanism to put request of order 10
+- [x] Status code tests
 - [ ] Test concurrent and parallel content server environment
-- [ ] Write a script to test multiple content serfer put requests and get lamport clock
-- [ ] Status code tests
+- [ ] Write a script to test multiple content server put requests and get lamport clock
 
 ## Code Quality Checklist (Appendix A)
 

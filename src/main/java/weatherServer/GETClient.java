@@ -8,6 +8,8 @@ import weatherServer.utils.HttpUtils;
 
 public class GETClient {
 
+    private static final int MAX_RETRIES = 10;
+
     /**
      * Entry point for the GETClient application.
      * 
@@ -46,20 +48,38 @@ public class GETClient {
      */
     public static void getRequest(LamportClock lamportClock, String serverName, int portNumber, String stationId) {
         String urlString = HttpUtils.buildGetRequestUrl(serverName, portNumber, stationId);
+        int attempt = 0;
 
-        HttpURLConnection conn = null;
-        try {
-            lamportClock.tick();
-            conn = HttpUtils.createConnection(urlString, lamportClock);
-            lamportClock = HttpUtils.displayGetRequestResponse(conn, lamportClock);
-        } catch (IOException e) {
-            System.err.println("An IO error occurred: " + e.getMessage());
-        } catch (Exception e) {
-            System.err.println("An exception occurred: " + e.getMessage());
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
+        while (attempt < MAX_RETRIES) {
+            HttpURLConnection conn = null;
+            try {
+                lamportClock.tick();
+                conn = HttpUtils.createConnection(urlString, lamportClock);
+                lamportClock = HttpUtils.displayGetRequestResponse(conn, lamportClock);
+                break; // Exit the loop if the request was successful
+            } catch (IOException e) {
+                System.err.println("Attempt " + (attempt + 1) + ": An IO error occurred: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Attempt " + (attempt + 1) + ": An exception occurred: " + e.getMessage());
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
             }
+
+            attempt++;
+
+            if (attempt < MAX_RETRIES) {
+                try {
+                    Thread.sleep(2000); // Wait for 2 seconds before the next attempt
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+            }
+        }
+
+        if (attempt == MAX_RETRIES) {
+            System.out.println("Maximum attempts reached. GET request failed after " + MAX_RETRIES + " tries.");
         }
     }
 }

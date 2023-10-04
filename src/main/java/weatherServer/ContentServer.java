@@ -11,7 +11,7 @@ import weatherServer.utils.WeatherDataFileManager;
 import weatherServer.models.WeatherData;
 
 public class ContentServer {
-
+    private static final int MAX_RETRIES = 10;
     private static LamportClock lamportClock = new LamportClock();
 
     /**
@@ -49,43 +49,64 @@ public class ContentServer {
      */
     public static LamportClock sendPUTRequest(String serverUrl, String jsonPayload, LamportClock lamportClock) {
         HttpURLConnection conn = null;
-        try {
-            lamportClock.tick();
+        int attempt = 0;
 
-            // Initialising the HttpURLConnection
-            URL url = new URL(serverUrl + "/weather.json");
-            conn = (HttpURLConnection) url.openConnection();
+        while (attempt < MAX_RETRIES) {
+            try {
+                lamportClock.tick();
 
-            conn.setDoOutput(true);
-            conn.setRequestMethod("PUT");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-Lamport-Clock", Long.toString(lamportClock.getTime()));
+                // Initialising the HttpURLConnection
+                URL url = new URL(serverUrl + "/weather.json");
+                conn = (HttpURLConnection) url.openConnection();
 
-            // Send payload
-            try (OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream())) {
-                if (jsonPayload != null) {
-                    out.write(jsonPayload);
+                conn.setDoOutput(true);
+                conn.setRequestMethod("PUT");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("X-Lamport-Clock", Long.toString(lamportClock.getTime()));
+
+                // Send payload
+                try (OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream())) {
+                    if (jsonPayload != null) {
+                        out.write(jsonPayload);
+                    } else {
+                        System.out.println("jsonPayload is null. Exiting");
+                        return lamportClock;
+                    }
+                }
+
+                // Check HTTP Response Code
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 201) {
+                    lamportClock = HttpUtils.displayPostRequestResponse(conn, lamportClock);
+                    break; // Exit the loop if the request was successful
                 } else {
-                    System.out.println("jsonPayload is null. Exiting");
-                    return lamportClock;
+                    System.out.println(
+                            "PUT request attempt " + (attempt + 1) + " failed with response code: " + responseCode);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
                 }
             }
 
-            // Check HTTP Response Code
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 201) {
-                lamportClock = HttpUtils.displayPostRequestResponse(conn, lamportClock);
-            } else {
-                System.out.println("PUT request failed: " + responseCode);
-            }
+            attempt++;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
+            if (attempt < MAX_RETRIES) {
+                try {
+                    Thread.sleep(2000); // Wait for 2 seconds before the next attempt
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
             }
         }
+
+        if (attempt == MAX_RETRIES) {
+            System.out.println("Maximum attempts reached. PUT request failed after " + MAX_RETRIES + " tries.");
+        }
+
         return lamportClock;
     }
 }
