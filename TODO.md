@@ -146,3 +146,8 @@
 ## References
 
 - List any sources or references you used during your implementation and testing.
+
+## My Uni Announcments
+
+- [ ] So, I highly advice everyone to write about their Lamport clock implementation (Write how you've implemented and it's working according to your code) and how you're planning on testing you Assignment 2 in the README file
+- [ ] Edit: Test files should be in text format and not makefile format.
