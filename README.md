@@ -4,74 +4,103 @@ Hugh Signoriello | a1829716
 
 ## Weather Data Aggregator
 
-A distributed system to aggregate and serve weather data in a coordinated manner. The system comprises three main components:
+Weather Data Aggregator is a distributed system designed to aggregate and serve weather data efficiently. It consists of the following primary components:
 
-1. **Aggregation Server**: Central hub that stores and manages weather data.
-2. **Content Server**: Reads and uploads weather data to the Aggregation Server.
-3. **GET Client**: Queries the Aggregation Server for weather data and displays it.
+1. **Aggregation Server:** Serves as the central repository for storing and managing weather data.
+2. **Content Server:** Facilitates reading and uploading weather data to the Aggregation Server.
+3. **GET Client:** Enables querying the Aggregation Server to retrieve and display weather data.
 
-## How to run
+## Setup Instructions
 
-### First install maven
+### Prerequisites
 
-`make install`
+Ensure Maven is installed on your machine:
 
-Mac
-`brew install maven`
+For **Fedora Linux**:
 
-Linux For Ubuntu-based systems:
+```bash
+make install-mvn-linux-fedora
+```
 
-`sudo apt update
-sudo apt install maven`
+For **Mac**:
 
-### First time setup
+```bash
+make install-mvn-mac
+```
 
-`make setup`
+### Initial Setup
 
-Note that all tests will run as maven compiles
+Execute the following commands for initial setup:
 
-`compile-mvn` compiles folders(note compile-javac does not use maven and is simply a placeholder to pass gradescope environment compilation)
+```bash
+make setup
+```
 
-### Refer to makefile
+> **Note:** All tests will be executed as Maven compiles.
 
-`make run-all-servers-mac` runs all servers on mac
-`make run-all-servers-linux` runs all servers on linux
+### Compilation
 
-alternatively in new terminal windows you can run the aggregate server, content server and get client respectively
+To compile the code:
 
-`make test-all` runs all tests
+```bash
+make compile-mvn
+```
 
-`you can also seperate testing with`
+> `compile-javac` is merely a placeholder to ensure compatibility with the GradeScope environment.
 
-`make run-unit-tests`
+## Running the Servers
 
-`make run-integration-tests`
+For **Mac**:
 
-`make run-other-tests`
+```bash
+make run-all-servers-mac
+```
 
-## API Documentation
+For **Linux**:
 
-## Aggregation server
+```bash
+make run-all-servers-linux
+```
 
-To get all weather on aggregate server
+Alternatively, you can run the Aggregation Server, Content Server, and GET Client in separate terminal windows:
 
-<http://localhost:4567/weather/>
+- Aggregation Server: `make run-aggregation-server`
+- Content Server: `make run-content-server`
 
-To get weather by station on aggregate server
+## API Endpoints
 
-<http://localhost:4567/weather?station=STATION_ID>
+### Aggregation Server
 
-## Content server
+- **Fetch all weather data:**
 
-### Uploading a new file to aggregation server via content server thorugh PUT request
+  [http://localhost:4567/weather/](http://localhost:4567/weather/)
 
-Use the api endpoint:
+- **Retrieve weather data by station ID:**
 
-<http://localhost:4567/weather.json>
+  [http://localhost:4567/weather?station=STATION_ID](http://localhost:4567/weather?station=STATION_ID)
 
-## Running tests
+### Content Server
 
-Make sure port aggregation server and content server are not running or alternatively 4567 and 4568 are free
+- **Upload new weather data via PUT request:**
+
+  [http://localhost:4567/weather.json](http://localhost:4567/weather.json)
+
+## Running Tests
+
+Ensure that the ports for the Aggregation Server (`4567`) and Content Server (`4568`) are not in use:
+
+- Run all tests: `make test-all`
+- Execute unit tests: `make run-unit-tests`
+- Execute integration tests: `make run-integration-tests`
+- Run other tests: `make run-other-tests`
+
+## Makefile Details
+
+For a detailed understanding of the Makefile and its commands, please refer to the provided Makefile. It contains scripts for installing dependencies, setting up the environment, compiling sources, and executing various components of the system.
+
+---
+
+This format is well-structured and should provide clarity on the steps required to set up, run, and test the Weather Data Aggregator system.
 
 ## Features
 
@@ -81,20 +110,20 @@ Make sure port aggregation server and content server are not running or alternat
 - get and put request available from api endpoints
 - get requests available for all weather data and specific weather station ids
 
-### Aggregation Server
+### Aggregation Server Features
 
 - **HTTP Endpoints**: Supports HTTP PUT for ingesting new weather data and HTTP GET for retrieving stored weather data.
 - **JSON Management**: Handles the storage and retrieval of weather data in JSON format.
 - **Lamport Clocks**: Utilises Lamport clocks for synchronising operations and maintaining the order of incoming data.
 - **Data Expiry**: Automatically removes stale data based on age or if the content server that provided it goes offline.
 
-### Content Server
+### Content Server Features
 
 - **Data Reading**: Reads weather data from a local file.
 - **JSON Transformation**: Converts the local data into JSON format for standardisation.
 - **Data Upload**: Sends the JSON-formatted weather data to the Aggregation Server using HTTP PUT requests.
 
-### GET Client
+### GET Client Features
 
 - **HTTP Requests**: Makes HTTP GET requests to the Aggregation Server for fetching weather data.
 - **Data Parsing and Display**: Receives, parses, and displays the JSON-formatted weather data.
@@ -108,11 +137,67 @@ Make sure port aggregation server and content server are not running or alternat
 5. The Aggregation Server responds with the most recent JSON-formatted weather data.
 6. The GET Client parses and displays the received data.
 
-## Additional features
+## Aggregation System with Lamport Clocks
 
-- The system is able to handle data concurrency and eventual consistency, for which Lamport clocks are implemented.
-- Data from inactive Content Servers or outdated weather data are be purged to maintain data integrity and relevance.
+## Implementation Details
 
-```
+- **Assigning Timestamps to Events:**
+  - Every event, such as a request or response, triggers the `tick()` method in the `LamportClock`.
+  - Nodes synchronise their clock using the `sync()` method upon receiving an event from another node.
+  - The ordering time variable, a number type inside the `LamportClock` class, is updated during GET and POST requests.
+  - The relationship is determined using timestamps: if event A's timestamp is less than B's, A happened before B.
 
-```
+## Testing Methodologies
+
+### 1. **Regressive Testing:**
+
+- After modifying methods, previous tests were rerun to ensure consistency.
+- Significant in refactoring phases, like when changing from `gson` to manual JSON parsing.
+
+### 2. **Unit Testing:**
+
+- **WeatherDataFileManagerTests:**
+
+  - `testReadFileAndParse()`: Checks data retrieval and parsing.
+  - `testWeatherDataMapToFileAndReadBack()`: Verifies read-write consistency.
+  - `testConcurrentWrite()`: Examines concurrent write capability.
+  - `testInvalidFilePath()`: Checks invalid file path handling.
+  - `testEmptyFile()`: Verifies handling of an empty file.
+
+- **JsonUtilsTests:**
+  - `testToJsonAndFromJson()`: Validates bidirectional JSON conversion.
+  - `testGetDataFromJsonFile()`: Checks JSON file parsing.
+  - `testJsonToWeatherDataMap()`: Validates JSON to HashMap conversion.
+  - `testParseStringToJson()`: Checks JSON string parsing.
+  - `testManualJsonToMap()`: Tests manual JSON-to-map conversion.
+
+### 3. **Testing Harness for Distributed Entities:**
+
+- Simulates interactions among distributed entities.
+- Uses multi-threading to emulate multiple clients and servers.
+- Ensures order and synchronisation using a Lamport clock instance.
+
+### 4. **Synchronisation and Fault Testing:**
+
+- **Synchronisation Testing with Lamport Clocks:**
+
+  - Ensure entities maintain operation order based on Lamport clocks.
+  - Test clock ticking and synchronisation after PUT or GET requests.
+
+- **Fault Testing:**
+  - Includes server crashes, invalid requests, unexpected client behaviour, and network issues.
+  - Tests include checking error responses, restart recoverability, and network issue handling.
+
+### 5. **Edge Cases:**
+
+- Explored various scenarios like missing station IDs, empty inputs, and concurrent PUT operations.
+- Used locks and Lamport clocks to handle concurrent interactions and ensure synchronisation.
+
+## References
+
+- [Java Documentation](https://docs.oracle.com/)
+- [Distributed Systems Course Notes - MyUni](https://myuni.adelaide.edu.au/courses/85272/modules)
+
+---
+
+This README is now more structured with concise descriptions for better readability.

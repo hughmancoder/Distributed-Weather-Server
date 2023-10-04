@@ -11,7 +11,8 @@ import weatherServer.utils.WeatherDataFileManager;
 import weatherServer.models.WeatherData;
 
 public class ContentServer {
-    private static final int MAX_RETRIES = 10;
+    public static int responseCode;
+    public static int MAX_RETRIES = 10;
     private static LamportClock lamportClock = new LamportClock();
 
     /**
@@ -32,9 +33,6 @@ public class ContentServer {
         WeatherData wd = WeatherDataFileManager.readFileAndParse(filePath);
         String jsonPayload = JsonUtils.toJson(wd);
 
-        // TODO
-        System.out.println("content server payload " + jsonPayload);
-
         if (jsonPayload != null) {
             sendPUTRequest(serverUrl, jsonPayload, lamportClock);
         } else {
@@ -52,6 +50,7 @@ public class ContentServer {
      */
     public static LamportClock sendPUTRequest(String serverUrl, String jsonPayload, LamportClock lamportClock) {
         HttpURLConnection conn = null;
+
         int attempt = 0;
 
         while (attempt < MAX_RETRIES) {
@@ -78,7 +77,7 @@ public class ContentServer {
                 }
 
                 // Check HTTP Response Code
-                int responseCode = conn.getResponseCode();
+                responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK || responseCode == 201) {
                     lamportClock = HttpUtils.displayPostRequestResponse(conn, lamportClock);
                     break; // Exit the loop if the request was successful

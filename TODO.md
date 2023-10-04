@@ -77,8 +77,8 @@
 
 - [x] Add retry mechanism to put request of order 10
 - [x] Status code tests
-- [ ] Test concurrent and parallel content server environment
-- [ ] Write a script to test multiple content server put requests and get lamport clock
+- [x] Test concurrent and parallel content server environment
+- [x] Write a script to test multiple content server put requests and get lamport clock
 
 ## Code Quality Checklist (Appendix A)
 
@@ -112,7 +112,7 @@
 
 ### Bonus Functionality
 
-- [ ] Manual JSON parsing for extra points
+- [x] Manual JSON parsing for extra points
 
 ## Testing
 
@@ -142,16 +142,6 @@
    - Discuss how timestamps are assigned to events.
    - Elaborate on how the "happened before" relationship is determined using the Lamport timestamps.
    - Mention any optimizations or extensions you've implemented.
-
-3. **Testing Methodologies**:
-
-   a. **Unit Testing**: - Discuss the unit tests implemented to test individual components of the Lamport clock. - Mention any mock objects or stubs used.
-
-   b. **Integration Testing**: - Describe how the Lamport clock is tested in the context of the whole system. - Highlight any scenarios or edge cases you focused on.
-
-   c. **Stress Testing**: - Talk about any tests you implemented to push the limits of your Lamport clock. - Mention the results and any bottlenecks identified.
-
-   d. **Referencing "myuni announcement"**: - Implement additional tests or testing methodologies based on recommendations or guidelines from the myuni announcement. - Discuss the rationale and results of these tests.
 
 ## References
 

@@ -47,9 +47,8 @@ setup:
 build:
 	mvn clean compile
 
-test-all:
-	@echo "Running Tests..."
-	mvn test
+test-all: run-unit-tests run-integration-tests run-other-tests
+	
 
 run-unit-tests:
 	mvn test -Dtest=WeatherDataFileManagerTests,JsonUtilsTests
@@ -58,7 +57,9 @@ run-integration-tests:
 	mvn test -Dtest=serverIntegrationTests
 
 run-other-tests:
-	mvn test -Dtest=TestDataExpiry,StatusCodeTests
+	mvn test -Dtest=TestDataExpiry,DistributedSystemTests,StatusCodeTests
+
+
 
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
@@ -73,8 +74,6 @@ run-aggregation-server:
 
 run-content-server:
 	mvn exec:java -Dexec.mainClass="weatherServer.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
-
-
 
 run-client:
 	mvn exec:java -Dexec.mainClass="weatherServer.GETClient" -Dexec.args="$(CLIENT_ARGS)"

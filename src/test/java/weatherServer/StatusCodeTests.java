@@ -1,6 +1,7 @@
 package weatherServer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
@@ -9,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import weatherServer.models.WeatherData;
+import weatherServer.utils.JsonUtils;
 import weatherServer.utils.LamportClock;
 import weatherServer.utils.ServerHandler;
 
@@ -36,6 +38,7 @@ public class StatusCodeTests {
 
         String[] contentServerArgs = new String[] { AGGREGATION_SERVER_URL, TEXT_FILE };
         ContentServer.main(contentServerArgs);
+        ContentServer.MAX_RETRIES = 1;
     }
 
     @AfterClass
@@ -51,31 +54,49 @@ public class StatusCodeTests {
     @Test
     public void testBadRequest400() {
         try {
-            String invalidJsonPayload = "....";
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, invalidJsonPayload, lamportClock);
-            // fail("An exception should have been thrown");
+            String invalidRequest = "..."; // Example representation
+
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, invalidRequest,
+                    lamportClock);
+            assertEquals(400, ContentServer.responseCode);
         } catch (Exception e) {
-            assertEquals("HTTP/1.1 400 Bad Request", e.getMessage());
+
         }
     }
 
     @Test
     public void testMissingStationId404() {
         try {
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL + "?station=missing_id",
-                    "{}", lamportClock);
+            String missingStationIdPayload = JsonUtils.toJson(new WeatherData(null));
 
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, missingStationIdPayload,
+                    lamportClock);
         } catch (Exception e) {
-            assertEquals("HTTP/1.1 404 Not Found", e.getMessage());
+            System.out.println(ContentServer.responseCode);
+            assertEquals(ContentServer.responseCode, 404);
         }
     }
 
     @Test
     public void testNoContent204() {
         try {
+            // If the PUT request does not contain a payload, the server returns a 204.
             ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, "{}", lamportClock);
         } catch (Exception e) {
-            assertEquals("HTTP/1.1 204 No Content", e.getMessage());
+            assertEquals(204, ContentServer.responseCode);
+        }
+    }
+
+    @Test
+    public void testSuccessfulPUTRequest() {
+        try {
+
+            String validPayload = JsonUtils.toJson(new WeatherData("IDS60901"));
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, validPayload,
+                    lamportClock);
+            assertEquals(201, ContentServer.responseCode);
+        } catch (Exception e) {
+            fail("An exception should not have been thrown: " + e.getMessage());
         }
     }
 }

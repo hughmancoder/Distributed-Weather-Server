@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import java.util.concurrent.ExecutionException;
@@ -27,7 +26,7 @@ import weatherServer.utils.ServerHandler;
 
 public class serverIntegrationTests {
     private static final String TEXT_FILE = "src/test/resources/test_weather_data_IDS60901.txt";
-    private static final String JSON_FILE_2 = "src/test/resources/test_weather_data_IDS60902.json";
+    private static final String JSON_FILE = "src/test/resources/test_weather_data_IDS60902.json";
     private static final String AGGREGATION_SERVER_PORT = "4567";
     private static final String AGGREGATION_SERVER_URL = "http://localhost:" + AGGREGATION_SERVER_PORT;
     private static LamportClock lamportClock;
@@ -64,7 +63,7 @@ public class serverIntegrationTests {
 
     @Test
     public void testSendPutRequestToAggregationServer() {
-        WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
+        WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE);
         String jsonPayload = JsonUtils.toJson(weatherData);
 
         try {
@@ -87,7 +86,7 @@ public class serverIntegrationTests {
 
     @Test
     public void testDataSynchronisation() {
-        WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
+        WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE);
         String jsonPayload = JsonUtils.toJson(weatherData);
 
         // TESTING CONTENT SERVER GET REQUEST
