@@ -32,6 +32,9 @@ public class ContentServer {
         WeatherData wd = WeatherDataFileManager.readFileAndParse(filePath);
         String jsonPayload = JsonUtils.toJson(wd);
 
+        // TODO
+        System.out.println("content server payload " + jsonPayload);
+
         if (jsonPayload != null) {
             sendPUTRequest(serverUrl, jsonPayload, lamportClock);
         } else {

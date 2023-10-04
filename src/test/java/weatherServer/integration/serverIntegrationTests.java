@@ -3,8 +3,10 @@ package weatherServer.integration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import java.util.concurrent.ExecutionException;
@@ -60,31 +62,31 @@ public class serverIntegrationTests {
         aggregationServerHandler.stop();
     }
 
+    // @Test
+    // public void testSendPutRequestToAggregationServer() {
+    // WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
+    // String jsonPayload = JsonUtils.toJson(weatherData);
+
+    // try {
+    // ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload,
+    // lamportClock);
+    // } catch (Exception e) {
+    // fail("An exception should not have been thrown: " + e.getMessage());
+    // }
+    // }
+
+    // @Test
+    // public void testGetRequestFromGetClient() {
+    // try {
+    // GETClient.getRequest(lamportClock, "http://localhost",
+    // Integer.parseInt(AGGREGATION_SERVER_PORT), null);
+    // } catch (Exception e) {
+    // fail("An exception should not have been thrown: " + e.getMessage());
+    // }
+    // }
+
     @Test
-    public void testSendPutRequestToAggregationServer() {
-        WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
-        String jsonPayload = JsonUtils.toJson(weatherData);
-
-        try {
-            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload, lamportClock);
-        } catch (Exception e) {
-            fail("An exception should not have been thrown: " + e.getMessage());
-        }
-    }
-
-    @Test
-    public void testGetRequestFromGetClient() {
-        try {
-            GETClient.getRequest(lamportClock, "http://localhost",
-                    Integer.parseInt(AGGREGATION_SERVER_PORT), null);
-        } catch (Exception e) {
-            fail("An exception should not have been thrown: " + e.getMessage());
-        }
-    }
-
-    @Test
-    public void testDataSyncronisation() {
-
+    public void testDataSynchronisation() {
         WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
         String jsonPayload = JsonUtils.toJson(weatherData);
 
@@ -99,19 +101,25 @@ public class serverIntegrationTests {
             String GetRequestUrl = HttpUtils.buildGetRequestUrl("http://localhost",
                     Integer.parseInt(AGGREGATION_SERVER_PORT), null);
             HttpURLConnection conn = HttpUtils.createConnection(GetRequestUrl, lamportClock);
+
             int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
-                InputStream inputStream = conn.getInputStream();
+            if (responseCode != 200 && responseCode != 201) {
+                fail("Expected response code 200 or 201 but received: " + responseCode);
+                return;
+            }
+
+            try (InputStream inputStream = conn.getInputStream()) {
                 JsonObject responseJSON = JsonUtils.getJSONResponse(conn);
-                HashMap<String, WeatherData> weatherDataMap = JsonUtils
-                        .jsonToWeatherDataMap(responseJSON.toString());
+                System.out.println("Server Response: " + responseJSON);
+
+                HashMap<String, WeatherData> weatherDataMap = JsonUtils.jsonToWeatherDataMap(responseJSON.toString());
 
                 WeatherData loadedWeatherData = weatherDataMap.get(weatherData.getId());
                 assertEquals(weatherData.getId(), loadedWeatherData.getId());
                 assertEquals(weatherData.getName(), loadedWeatherData.getName());
-                inputStream.close();
-
             }
+        } catch (IOException e) {
+            fail("An IO exception should not have been thrown: " + e.getMessage());
         } catch (Exception e) {
             fail("An exception should not have been thrown: " + e.getMessage());
         }

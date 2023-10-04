@@ -138,10 +138,11 @@ public class HttpClient {
 
         AggregationServer.putToWeatherDataMap(wd);
         HashMap<String, WeatherData> weatherDataMap = AggregationServer.getWeatherDataMap();
+
         try {
             WeatherDataFileManager.writeFile(AggregationServer.DATA_STORAGE_PATH, weatherDataMap);
         } catch (IOException e) {
-            System.out.println("Erorr writing to file" + e.getMessage());
+            System.out.println("Error writing to file" + e.getMessage());
         }
 
         if (firstUpload) {
