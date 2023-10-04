@@ -11,7 +11,7 @@ CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 CLIENT_ARGS = http://localhost 4567
 CURRENT_DIR := $(shell pwd)
 
-all: install-mvn-linux-fedora setup
+all: compile-javac
 
 # Installation of necessary tools and dependencies
 install-mvn-mac:
