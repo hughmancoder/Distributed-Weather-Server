@@ -14,7 +14,7 @@ import weatherServer.utils.WeatherDataFileManager;
 import weatherServer.models.TimedEntry;
 
 public class AggregationServer {
-    public static final String DATA_STORAGE_PATH = "../../resources/temp_storage";
+    public static final String DATA_STORAGE_PATH = "src/main/resources/temp_storage";
     private static final long THIRTY_SECONDS = 30 * 1000;
     private static final ReentrantLock lock = new ReentrantLock();
     private static LamportClock lamportClock = new LamportClock();

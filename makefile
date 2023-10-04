@@ -3,15 +3,29 @@ JAVAC = javac
 SRC_DIR = src/main/java
 BIN_DIR = target/classes
 GSON_JAR = bin/gson-2.8.8.jar
-CLASSPATH = $(BIN_DIR):lib/*:$(GSON_JAR)  # Include Gson jar
+CLASSPATH = $(BIN_DIR):lib/*:$(GSON_JAR)
 JAVA_FILES = $(shell find $(SRC_DIR) -name "*.java")
 
 AGGREGATION_SERVER_ARGS = 4567
-CONTENT_SERVER_ARGS = "http://localhost:4567 src/main/resources/weather_data.txt"
-CLIENT_ARGS = "http://localhost 4567"
+CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
+CLIENT_ARGS = http://localhost 4567
 CURRENT_DIR := $(shell pwd)
 
-all: compile-javac
+all: install-mvn-linux-fedora setup
+
+# Installation of necessary tools and dependencies
+install-mvn-mac:
+	brew update
+	brew install maven
+
+install-mvn-linux-fedora:
+	sudo dnf install maven
+
+# Setting up the Maven project
+setup:
+	$(MVN) compile
+	$(MVN) package
+	$(MVN) install
 
 # Compile Java files using javac
 compile-javac:
@@ -21,12 +35,6 @@ compile-javac:
 # Compile Java files using Maven
 compile-mvn:
 	$(MVN) compile
-
-install:
-	@echo "Updating system packages..."
-	@sudo apt update
-	@echo "Installing Maven..."
-	@sudo apt install maven
 
 clean:
 	mvn clean
@@ -65,6 +73,8 @@ run-aggregation-server:
 
 run-content-server:
 	mvn exec:java -Dexec.mainClass="weatherServer.ContentServer" -Dexec.args="$(CONTENT_SERVER_ARGS)"
+
+
 
 run-client:
 	mvn exec:java -Dexec.mainClass="weatherServer.GETClient" -Dexec.args="$(CLIENT_ARGS)"

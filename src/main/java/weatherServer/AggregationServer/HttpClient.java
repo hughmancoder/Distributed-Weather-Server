@@ -16,7 +16,6 @@ public class HttpClient {
     private Socket clientSocket;
     private LamportClock lamportClock;
     private boolean firstUpload = true;
-    private String DATA_STORAGE_PATH = "../../resources/temp_storage";
 
     public HttpClient(Socket clientSocket, LamportClock lamportClock) {
         this.clientSocket = clientSocket;
@@ -107,7 +106,7 @@ public class HttpClient {
         AggregationServer.putToWeatherDataMap(wd);
         HashMap<String, WeatherData> weatherDataMap = AggregationServer.getWeatherDataMap();
         try {
-            WeatherDataFileManager.writeFile(DATA_STORAGE_PATH, weatherDataMap);
+            WeatherDataFileManager.writeFile(AggregationServer.DATA_STORAGE_PATH, weatherDataMap);
         } catch (IOException e) {
             System.out.println("Erorr writing to file" + e.getMessage());
         }

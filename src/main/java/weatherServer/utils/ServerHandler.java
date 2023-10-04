@@ -42,7 +42,7 @@ public class ServerHandler {
     public void start() {
         isRunning = true;
 
-        System.out.println("Running aggregation server on port " + port + "..");
+        System.out.println("Running aggregation server at  http://localhost:" + port + "..");
         timer = new Timer();
         timer.schedule(timerTask, timerInterval, timerInterval);
         startServer();
