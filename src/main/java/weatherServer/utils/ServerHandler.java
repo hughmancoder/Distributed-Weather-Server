@@ -24,6 +24,15 @@ public class ServerHandler {
     private ServerSocket serverSocket;
     private static long timerInterval = 30 * 1000; // Thirty seconds
 
+    /**
+     * Constructs the ServerHandler for managing server operations.
+     * 
+     * @param port           The port on which the server will run.
+     * @param lock           ReentrantLock to handle synchronisation.
+     * @param lamportClock   The instance of the LamportClock for maintaining
+     *                       logical time.
+     * @param weatherDataMap The map containing weather data.
+     */
     public ServerHandler(int port, ReentrantLock lock, LamportClock lamportClock,
             HashMap<String, WeatherData> weatherDataMap) {
         this.port = port;

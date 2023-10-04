@@ -28,6 +28,13 @@ public class WeatherDataFileManager {
         }
     }
 
+    /**
+     * Reads weather data from a file and deserialises it into a map.
+     * 
+     * @param filePath The path of the file containing the weather data.
+     * @return A map of the deserialised weather data.
+     * @throws IOException If there's an error reading the file.
+     */
     public static HashMap<String, WeatherData> fileToWeatherDataMap(String filePath) throws IOException {
         final HashMap<String, WeatherData>[] weatherDataMap = new HashMap[] { new HashMap<>() };
         try {
@@ -59,6 +66,14 @@ public class WeatherDataFileManager {
         return weatherDataMap[0];
     }
 
+    /**
+     * Writes a map of weather data to a file.
+     * 
+     * @param filePath       The path of the file to which the weather data will be
+     *                       written.
+     * @param weatherDataMap The map containing weather data.
+     * @throws IOException If there's an error writing to the file.
+     */
     public static void writeFile(String filePath, HashMap<String, WeatherData> weatherDataMap) throws IOException {
         try {
             Path path = Paths.get(filePath);
@@ -83,6 +98,12 @@ public class WeatherDataFileManager {
         }
     }
 
+    /**
+     * Reads a file to extract and parse weather data.
+     * 
+     * @param fileLocation The location of the .txt file.
+     * @return A WeatherData object containing the parsed data
+     */
     public static WeatherData readFileAndParse(String fileLocation) {
         HashMap<String, String> map = new HashMap<>();
 

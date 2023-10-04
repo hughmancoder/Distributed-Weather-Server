@@ -84,7 +84,7 @@
 
 ### Do
 
-- [ ] Write comments above methods
+- [x] Write comments above methods
 - [x] Describe special cases
 - [x] Maintain modular code
 

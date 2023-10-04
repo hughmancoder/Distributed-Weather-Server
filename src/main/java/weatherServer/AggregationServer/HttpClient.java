@@ -17,6 +17,13 @@ public class HttpClient {
     private LamportClock lamportClock;
     private boolean firstUpload = true;
 
+    /**
+     * Constructor for the HttpClient.
+     * 
+     * @param clientSocket The socket for client-server communication.
+     * @param lamportClock The instance of the LamportClock for maintaining logical
+     *                     time.
+     */
     public HttpClient(Socket clientSocket, LamportClock lamportClock) {
         this.clientSocket = clientSocket;
         this.lamportClock = lamportClock;
@@ -50,6 +57,15 @@ public class HttpClient {
         }
     }
 
+    /**
+     * Determines the type of the request (GET or PUT) and processes it accordingly.
+     * 
+     * @param method          HTTP method type (GET or PUT).
+     * @param in              Input reader.
+     * @param out             Output writer.
+     * @param queryParameters The parameters for the HTTP query.
+     * @param requestBody     The body of the HTTP request.
+     */
     private void handleWeatherRequest(String method, BufferedReader in, PrintWriter out,
             Map<String, String> queryParameters, String requestBody) {
         switch (method) {
@@ -65,6 +81,14 @@ public class HttpClient {
         }
     }
 
+    /**
+     * Handles an aggregation GET request.
+     * Retrieves the weather data either for a specific station or for all stations,
+     * then sends it as a response.
+     * 
+     * @param out       Output writer.
+     * @param stationId The ID of the weather station (can be null).
+     */
     private void AggregationGETRequest(PrintWriter out, String stationId) {
         lamportClock.tick();
         String jsonResponse = stationId == null ? AggregationServer.getAllWeatherData()
@@ -82,6 +106,15 @@ public class HttpClient {
         out.println(jsonResponse);
     }
 
+    /**
+     * Handles an aggregation PUT request.
+     * Updates the weather data map and storage file with the new weather data
+     * provided in the request.
+     * 
+     * @param out         Output writer.
+     * @param jsonPayload The payload in JSON format containing the new weather
+     *                    data.
+     */
     private void AggregationPUTRequest(PrintWriter out, String jsonPayload) {
         lamportClock.tick();
 
