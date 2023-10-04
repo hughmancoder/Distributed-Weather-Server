@@ -62,28 +62,28 @@ public class serverIntegrationTests {
         aggregationServerHandler.stop();
     }
 
-    // @Test
-    // public void testSendPutRequestToAggregationServer() {
-    // WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
-    // String jsonPayload = JsonUtils.toJson(weatherData);
+    @Test
+    public void testSendPutRequestToAggregationServer() {
+        WeatherData weatherData = JsonUtils.getDataFromJsonFile(JSON_FILE_2);
+        String jsonPayload = JsonUtils.toJson(weatherData);
 
-    // try {
-    // ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload,
-    // lamportClock);
-    // } catch (Exception e) {
-    // fail("An exception should not have been thrown: " + e.getMessage());
-    // }
-    // }
+        try {
+            ContentServer.sendPUTRequest(AGGREGATION_SERVER_URL, jsonPayload,
+                    lamportClock);
+        } catch (Exception e) {
+            fail("An exception should not have been thrown: " + e.getMessage());
+        }
+    }
 
-    // @Test
-    // public void testGetRequestFromGetClient() {
-    // try {
-    // GETClient.getRequest(lamportClock, "http://localhost",
-    // Integer.parseInt(AGGREGATION_SERVER_PORT), null);
-    // } catch (Exception e) {
-    // fail("An exception should not have been thrown: " + e.getMessage());
-    // }
-    // }
+    @Test
+    public void testGetRequestFromGetClient() {
+        try {
+            GETClient.getRequest(lamportClock, "http://localhost",
+                    Integer.parseInt(AGGREGATION_SERVER_PORT), null);
+        } catch (Exception e) {
+            fail("An exception should not have been thrown: " + e.getMessage());
+        }
+    }
 
     @Test
     public void testDataSynchronisation() {
