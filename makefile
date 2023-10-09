@@ -11,7 +11,7 @@ CLIENT_ARGS = http://localhost 4567
 CURRENT_DIR := $(shell pwd)
 
 # all: compile-javac
-all: gradescope-setup
+all: compile-javac
 
 # Compile Java files using javac
 compile-javac:
