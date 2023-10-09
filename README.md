@@ -2,6 +2,28 @@
 
 Hugh Signoriello | a1829716
 
+## Table of Contents
+
+1. [Distributed Systems Assignment 2](#distributed-systems-assignment-2)
+   - [Weather Data Aggregator](#weather-data-aggregator)
+2. [Setup Instructions](#setup-instructions)
+   - [Prerequisites](#prerequisites)
+   - [Initial Setup](#initial-setup)
+   - [Compilation](#compilation)
+   - [Running the Servers](#running-the-servers)
+   - [API Endpoints](#api-endpoints)
+   - [Running Tests](#running-tests)
+   - [Makefile Details](#makefile-details)
+3. [Features](#features)
+   - [Aggregation Server Features](#aggregation-server-features)
+   - [Content Server Features](#content-server-features)
+   - [GET Client Features](#get-client-features)
+4. [Data Flow](#data-flow)
+5. [Aggregation System with Lamport Clocks](#aggregation-system-with-lamport-clocks)
+6. [Implementation Details](#implementation-details)
+7. [Testing Methodologies](#testing-methodologies)
+8. [References](#references)
+
 ## Weather Data Aggregator
 
 Weather Data Aggregator is a distributed system designed to aggregate and serve weather data efficiently. It consists of the following primary components:
@@ -14,15 +36,21 @@ Weather Data Aggregator is a distributed system designed to aggregate and serve 
 
 ### Prerequisites
 
-Ensure Maven is installed on your machine:
+Ensure Maven is installed on your machine.
 
-For **Fedora Linux**:
+- For **Fedora Linux**:
 
 ```bash
 make install-mvn-linux-fedora
 ```
 
-For **Mac**:
+- For **Ubuntu Linux**:
+
+```bash
+make install-mvn-linux-ubuntu
+```
+
+- For **Mac**:
 
 ```bash
 make install-mvn-mac
@@ -30,77 +58,114 @@ make install-mvn-mac
 
 ### Initial Setup
 
-Execute the following commands for initial setup:
+1. **Maven Project Setup**:
+
+   The setup target in the Makefile compiles the project, packages the compiled code in the jar format and installs any necessary dependencies.
 
 ```bash
 make setup
 ```
 
-> **Note:** All tests will be executed as Maven compiles.
+2. **Compilation**:
 
-### Compilation
+   You can compile your Java files either using `javac`:
 
-To compile the code:
+```bash
+make compile-javac
+```
+
+Or using Maven:
 
 ```bash
 make compile-mvn
 ```
 
-> `compile-javac` is merely a placeholder to ensure compatibility with the GradeScope environment.
+> **Note:** All tests will be executed as Maven compiles. Also, `compile-javac` is a placeholder to ensure compatibility with the GradeScope environment.
 
-## Running the Servers
+### Running the Servers
 
-For **Mac**:
+- For **Mac**:
 
 ```bash
 make run-all-servers-mac
 ```
 
-For **Linux**:
+- For **Linux**:
 
 ```bash
 make run-all-servers-linux
 ```
 
-Alternatively, you can run the Aggregation Server, Content Server, and GET Client in separate terminal windows:
+You can also run the Aggregation Server and Content Server separately in different terminal windows:
 
-- Aggregation Server: `make run-aggregation-server`
-- Content Server: `make run-content-server`
+- Aggregation Server:
 
-## API Endpoints
+```bash
+make run-aggregation-server
+```
 
-### Aggregation Server
+- Content Server:
 
-- **Fetch all weather data:**
+```bash
+make run-content-server
+```
+
+### API Endpoints
+
+#### Aggregation Server
+
+- **Fetch all weather data**:
 
   [http://localhost:4567/weather/](http://localhost:4567/weather/)
 
-- **Retrieve weather data by station ID:**
+- **Retrieve weather data by station ID**:
 
   [http://localhost:4567/weather?station=STATION_ID](http://localhost:4567/weather?station=STATION_ID)
 
-### Content Server
+#### Content Server
 
-- **Upload new weather data via PUT request:**
+- **Upload new weather data via PUT request**:
 
   [http://localhost:4567/weather.json](http://localhost:4567/weather.json)
 
-## Running Tests
+### Running Tests
 
-Ensure that the ports for the Aggregation Server (`4567`) and Content Server (`4568`) are not in use:
+Ensure the ports for the Aggregation Server (`4567`) and Content Server (`4568`) are not in use. Use the following commands for testing:
 
-- Run all tests: `make test-all`
-- Execute unit tests: `make run-unit-tests`
-- Execute integration tests: `make run-integration-tests`
-- Run other tests: `make run-other-tests`
+- Run all tests:
 
-## Makefile Details
+```bash
+make test-all
+```
 
-For a detailed understanding of the Makefile and its commands, please refer to the provided Makefile. It contains scripts for installing dependencies, setting up the environment, compiling sources, and executing various components of the system.
+- Execute unit tests:
 
----
+```bash
+make run-unit-tests
+```
 
-This format is well-structured and should provide clarity on the steps required to set up, run, and test the Weather Data Aggregator system.
+- Execute integration tests:
+
+```bash
+make run-integration-tests
+```
+
+- Run other specific tests:
+
+```bash
+make run-other-tests
+```
+
+### Makefile Details
+
+The Makefile contains scripts and targets for various tasks like:
+
+- Installing Maven and other dependencies (`install-mvn-*` targets)
+- Setting up the Maven project (`setup`)
+- Compiling source files (`compile-javac` and `compile-mvn`)
+- Running different server components (`run-*` targets)
+- Cleaning up compiled files (`clean`)
+- Running different sets of tests (`test-*` targets)
 
 ## Features
 
@@ -173,11 +238,20 @@ This format is well-structured and should provide clarity on the steps required 
 
 ### 3. **Testing Harness for Distributed Entities:**
 
+DistributedSystemTests covers this:
+
 - Simulates interactions among distributed entities.
-- Uses multi-threading to emulate multiple clients and servers.
-- Ensures order and synchronisation using a Lamport clock instance.
+- testParallelGetClients() and testParallelContentServers(): Uses multi-threading to emulate multiple clients and servers.
+- verifyTimestamps(); Ensures order and synchronisation using a Lamport clock instance among tests
 
 ### 4. **Synchronisation and Fault Testing:**
+
+**Integration Testing**
+serverIntegrationTests covers testing integrating and syncing different components together
+
+- `testSendPutRequestToAggregationServer()`: tests that the PUT request in the Content Server integrates with the aggregation server
+- `testGetRequestFromGetClient()`: tests that the get client integrations with the aggregation server
+- `testDataSynchronisation()`: tests that ab additional put request in content server to aggregation server syncs with the get request from the get client
 
 - **Synchronisation Testing with Lamport Clocks:**
 
@@ -185,8 +259,8 @@ This format is well-structured and should provide clarity on the steps required 
   - Test clock ticking and synchronisation after PUT or GET requests.
 
 - **Fault Testing:**
-  - Includes server crashes, invalid requests, unexpected client behaviour, and network issues.
-  - Tests include checking error responses, restart recoverability, and network issue handling.
+  - TestDataExpiry: Tests server crashes and restart recoverability due to unexpected crashes and network issues. This complements the unit testing for the save and write helper functions used to asist temporary storagte in aggregation server.
+  - StatusCodeTests: covers tests include checking error responses, and network issue handling, invalid requests.
 
 ### 5. **Edge Cases:**
 
@@ -197,7 +271,3 @@ This format is well-structured and should provide clarity on the steps required 
 
 - [Java Documentation](https://docs.oracle.com/)
 - [Distributed Systems Course Notes - MyUni](https://myuni.adelaide.edu.au/courses/85272/modules)
-
----
-
-This README is now more structured with concise descriptions for better readability.

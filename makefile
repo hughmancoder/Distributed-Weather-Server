@@ -11,21 +11,8 @@ CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 CLIENT_ARGS = http://localhost 4567
 CURRENT_DIR := $(shell pwd)
 
-all: compile-javac
-
-# Installation of necessary tools and dependencies
-install-mvn-mac:
-	brew update
-	brew install maven
-
-install-mvn-linux-fedora:
-	sudo dnf install maven
-
-# Setting up the Maven project
-setup:
-	$(MVN) compile
-	$(MVN) package
-	$(MVN) install
+# all: compile-javac
+all: gradescope-setup
 
 # Compile Java files using javac
 compile-javac:
@@ -38,11 +25,6 @@ compile-mvn:
 
 clean:
 	mvn clean
-
-setup:
-	mvn compile
-	mvn package
-	mvn install
 
 build:
 	mvn clean compile
@@ -77,3 +59,26 @@ run-content-server:
 
 run-client:
 	mvn exec:java -Dexec.mainClass="weatherServer.GETClient" -Dexec.args="$(CLIENT_ARGS)"
+
+# Installation of necessary tools and dependencies
+install-mvn-mac:
+	brew update
+	brew install maven
+
+install-mvn-linux-ubuntu:
+	sudo apt update
+	sudo apt install maven
+
+install-mvn-linux-fedora:
+	sudo dnf install maven
+
+# Setting up the Maven project
+setup:
+	$(MVN) compile
+	$(MVN) package
+	$(MVN) install
+
+gradescope-setup:
+	# Only setup and compile for Gradescope, assuming Maven is pre-installed
+	make setup
+	make compile-mvn
