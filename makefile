@@ -5,7 +5,6 @@ BIN_DIR = target/classes
 GSON_JAR = bin/gson-2.8.8.jar
 CLASSPATH = $(BIN_DIR):lib/*:$(GSON_JAR)
 JAVA_FILES = $(shell find $(SRC_DIR) -name "*.java")
-
 AGGREGATION_SERVER_ARGS = 4567
 CONTENT_SERVER_ARGS = http://localhost:4567 src/main/resources/weather_data.txt
 CLIENT_ARGS = http://localhost 4567
@@ -41,8 +40,6 @@ run-integration-tests:
 run-other-tests:
 	mvn test -Dtest=TestDataExpiry,DistributedSystemTests,StatusCodeTests
 
-
-
 run-all-servers-linux:
 	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
 	gnome-terminal --tab --active --title="Content Server" -- make run-content-server
@@ -66,19 +63,26 @@ install-mvn-mac:
 	brew install maven
 
 install-mvn-linux-ubuntu:
-	sudo apt update
-	sudo apt install maven
+	sudo apt update && sudo apt install -y maven
 
 install-mvn-linux-fedora:
 	sudo dnf install maven
 
 # Setting up the Maven project
 setup:
-	$(MVN) compile
 	$(MVN) package
 	$(MVN) install
+	$(MVN) compile
 
-gradescope-setup:
-	# Only setup and compile for Gradescope, assuming Maven is pre-installed
-	make setup
-	make compile-mvn
+MVN_PATH := $(shell which mvn 2> /dev/null)
+
+check-mvn:
+ifndef MVN_PATH
+	@echo "Maven not found. Installing..."
+	make install-mvn-linux-ubuntu
+else
+	@echo "Maven is already installed at $(MVN_PATH)"
+endif
+
+
+gradescope-setup: check-mvn compile-mvn
