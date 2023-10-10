@@ -67,9 +67,12 @@ install-mvn-linux-ubuntu:
 	if command -v sudo > /dev/null; then \
 		sudo apt-get install apt-utils; \
 		sudo apt-get update && sudo apt-get install -y maven; \
+		sudo update-alternatives --config java; \
+
 	else \
 		apt-get install apt-utils; \
 		apt-get update && apt-get install -y maven; \
+		update-alternatives --config java; \
 	fi	
 
 # Setting up the Maven project
@@ -88,4 +91,4 @@ else
 		@echo "Maven is already installed at $(MVN_PATH)"
 endif
 
-gradescope-setup: install-mvn-linux-ubuntu compile-mvn
+gradescope-setup: install-mvn-linux-ubuntu setup
