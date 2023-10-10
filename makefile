@@ -65,10 +65,13 @@ install-mvn-mac:
 # Ubuntu 22.04
 install-mvn-linux-ubuntu:
 	if command -v sudo > /dev/null; then \
+		sudo apt-get install apt-utils
 		sudo apt-get update && sudo apt-get install -y maven; \
 	else \
+		apt-get install apt-utils
 		apt-get update && apt-get install -y maven; \
-	fi
+	fi	
+
 
 # Setting up the Maven project
 setup:
@@ -79,11 +82,11 @@ setup:
 MVN_PATH := $(shell which mvn 2> /dev/null)
 
 check-mvn:
-ifndef MVN_PATH
-	@echo "Maven not found. Installing..."
-	make install-mvn-linux-ubuntu
-else
-	@echo "Maven is already installed at $(MVN_PATH)"
-endif
+	ifndef MVN_PATH
+		@echo "Maven not found. Installing..."
+		make install-mvn-linux-ubuntu
+	else
+		@echo "Maven is already installed at $(MVN_PATH)"
+	endif
 
-gradescope-setup: install-mvn-linux-ubuntu check-mvn compile-mvn
+gradescope-setup: install-mvn-linux-ubuntu compile-mvn
