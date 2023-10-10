@@ -11,7 +11,7 @@ CLIENT_ARGS = http://localhost 4567
 CURRENT_DIR := $(shell pwd)
 
 # all: compile-javac
-all: compile-javac
+all: gradescope-setup
 
 # Compile Java files using javac
 compile-javac:
@@ -62,11 +62,9 @@ install-mvn-mac:
 	brew update
 	brew install maven
 
+# Ubuntu 22.04
 install-mvn-linux-ubuntu:
-	sudo apt update && sudo apt install -y maven
-
-install-mvn-linux-fedora:
-	sudo dnf install maven
+	sudo apt-get update && sudo apt-get install -y maven
 
 # Setting up the Maven project
 setup:
@@ -84,5 +82,4 @@ else
 	@echo "Maven is already installed at $(MVN_PATH)"
 endif
 
-
-gradescope-setup: check-mvn compile-mvn
+gradescope-setup: install-mvn-linux-ubuntu check-mvn compile-mvn
