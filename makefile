@@ -64,7 +64,11 @@ install-mvn-mac:
 
 # Ubuntu 22.04
 install-mvn-linux-ubuntu:
-	sudo apt-get update && sudo apt-get install -y maven
+	if command -v sudo > /dev/null; then \
+		sudo apt-get update && sudo apt-get install -y maven; \
+	else \
+		apt-get update && apt-get install -y maven; \
+	fi
 
 # Setting up the Maven project
 setup:
