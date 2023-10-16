@@ -36,7 +36,7 @@ Weather Data Aggregator is a distributed system designed to aggregate and serve 
 
 ### Prerequisites
 
-Ensure Maven is installed on your machine.
+Ensure Maven is installed on your machine and as well as java 11 (if you are using a different version of java set it as the target in the pom.xml file)
 
 - For **Fedora Linux**:
 
@@ -55,6 +55,8 @@ make install-mvn-linux-ubuntu
 ```bash
 make install-mvn-mac
 ```
+
+### Notes
 
 ### Initial Setup
 

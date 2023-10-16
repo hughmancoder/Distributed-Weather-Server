@@ -41,8 +41,8 @@ run-other-tests:
 	mvn test -Dtest=TestDataExpiry,DistributedSystemTests,StatusCodeTests
 
 run-all-servers-linux:
-	gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
-	gnome-terminal --tab --active --title="Content Server" -- make run-content-server
+    dbus-launch gnome-terminal --tab --active --title="Aggregation Server" -- make run-aggregation-server
+    dbus-launch gnome-terminal --tab --active --title="Content Server" -- make run-content-server
 
 run-all-servers-mac:
 	osascript -e 'tell app "Terminal" to do script "cd $(CURRENT_DIR) && make run-aggregation-server"'
