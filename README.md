@@ -1,6 +1,6 @@
-# Distributed Systems Assignment 2
-
-Hugh Signoriello | a1829716
+# Distirbuted weather Server
+Author: Hugh Signoriello 
+Technologies: Java, Maven, Junit, Gson
 
 ## Table of Contents
 
