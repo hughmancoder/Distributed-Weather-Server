@@ -4,8 +4,7 @@ Technologies: Java, Maven, Junit, Gson
 
 ## Table of Contents
 
-1. [Distributed Systems Assignment 2](#distributed-systems-assignment-2)
-   - [Weather Data Aggregator](#weather-data-aggregator)
+1. - [Weather Data Aggregator](#weather-data-aggregator)
 2. [Setup Instructions](#setup-instructions)
    - [Prerequisites](#prerequisites)
    - [Initial Setup](#initial-setup)
