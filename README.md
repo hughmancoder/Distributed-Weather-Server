@@ -1,4 +1,4 @@
-# Distirbuted weather Server
+# Distributed weather Server
 Author: Hugh Signoriello 
 Technologies: Java, Maven, Junit, Gson
 
