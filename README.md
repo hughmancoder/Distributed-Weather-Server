@@ -1,6 +1,6 @@
 # Distributed weather Server
-Author: Hugh Signoriello 
-Technologies: Java, Maven, Junit, Gson
+
+Built with: Java, Maven, Junit and Gson
 
 ## Table of Contents
 
